@@ -1,0 +1,15 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Spine production",
+      "description": "Prepare layered assets, author rigs and animation, then integrate slots and skins into a chosen game.",
+      "skills": [
+        "spine-asset-prep",
+        "spine-rig-animation",
+        "spine-game-integration"
+      ]
+    }
+  ]
+}
