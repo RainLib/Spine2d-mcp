@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "spine-pipeline": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "/path/to/spine-pipeline-mcp",
+        "run",
+        "--locked",
+        "spine-pipeline-mcp"
+      ],
+      "timeout": 300000,
+      "env": {
+        "SPINE_MCP_SOURCE_ROOT": "/path/to/test-assets",
+        "SPINE_MCP_STAGING_ROOT": "/path/to/separate-staging"
+      }
+    }
+  }
+}

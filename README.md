@@ -1,10 +1,14 @@
+![Spine Pipeline MCP: a local bridge between Spine and coding agents](docs/assets/brand/banner.png)
+
 # Spine Pipeline MCP
+
+<img src="docs/assets/brand/icon.png" alt="Original Spine Pipeline MCP icon" width="80" align="right">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **A local, staging-first MCP foundation for Spine asset pipelines.**
 
-[中文说明](docs/README.zh-CN.md) · [Architecture](docs/architecture.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
+[中文说明](docs/README.zh-CN.md) · [Connect Codex / Claude](docs/clients.md) · [Architecture](docs/architecture.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
 > **Early prototype, project version 0.1.0.** This repository uses the official Python MCP SDK **2.3.0**. That SDK version is not a claim of “MCP protocol 2.0”, FastMCP 2.x, or project version 2.0. The ten tools below are implemented. Output remains staging-only; there is no publication tool.
 
@@ -58,14 +62,34 @@ uv run --locked spine-pipeline-mcp
 
 The last command starts a stdio MCP server waiting for a client; it is not an interactive CLI. Stop it with Ctrl-C. Start with the synthetic sample or your own **test copies**, not a production asset root.
 
-### MCP client configuration
+### Codex configuration (TOML)
 
-Adapt this JSON to your client's MCP settings. Replace every placeholder with an actual absolute path. If the client cannot find `uv`, use its absolute executable path.
+Codex uses a named TOML table, **not** a `mcpServers` JSON object. Review the [Codex template](examples/clients/codex.config.toml) and merge it into the intended config without replacing existing settings:
+
+```toml
+[mcp_servers.spine-pipeline]
+command = "uv"
+args = ["--directory", "/path/to/spine-pipeline-mcp", "run", "--locked", "spine-pipeline-mcp"]
+startup_timeout_sec = 30
+tool_timeout_sec = 300
+
+[mcp_servers.spine-pipeline.env]
+SPINE_MCP_SOURCE_ROOT = "/path/to/test-assets"
+SPINE_MCP_STAGING_ROOT = "/path/to/separate-staging"
+```
+
+A separate `CODEX_HOME` (for example an API-account wrapper) does not inherit this entry automatically. An actual read-only Codex MCP tool invocation has been verified, not merely config parsing.
+
+### Claude Code configuration (JSON)
+
+Claude Code uses `mcpServers` JSON. This format is **not** Codex TOML. Adapt the following or use the [Claude Code template](examples/clients/claude.mcp.json). Replace every placeholder with an actual absolute path. If the client cannot find `uv`, use its absolute executable path.
 
 ```json
 {
   "mcpServers": {
     "spine-pipeline": {
+      "type": "stdio",
+      "timeout": 300000,
       "command": "uv",
       "args": ["--directory", "/path/to/spine-pipeline-mcp", "run", "--locked", "spine-pipeline-mcp"],
       "env": {
@@ -77,7 +101,9 @@ Adapt this JSON to your client's MCP settings. Replace every placeholder with an
 }
 ```
 
-Example calls for either tool:
+For a session-only Claude connection, use `claude --mcp-config /path/to/private-spine.mcp.json --strict-mcp-config`. Claude Code's isolated health check has been verified as Connected; a Claude model-driven call has not been claimed. The [client guide](docs/clients.md) explains scopes, verification and the licensed Spine CLI chain.
+
+Example calls for source-reading tools:
 
 ```json
 {"relative_path": "minimal.json"}

@@ -1,3 +1,5 @@
+![Spine Pipeline MCP](assets/brand/banner.png)
+
 # Spine Pipeline MCP
 
 项目 **0.1.0**，采用 Python 官方 MCP SDK **2.3.0**，通过 stdio 使用。它不是“协议 2.0”或 FastMCP 2.x。
@@ -16,6 +18,10 @@
 ## 整体 Mesh 的边界
 
 可检查骨骼引用/循环、UV、三角索引、weighted vertices编码、权重和与时间线。不会自动重新绑骨、生成完整Mesh或改权重。连续身体、脸部刚性、披风隔离、脚不漂移仍需本地角色适配器和渲染验证，不能用“资源加载成功”替代。
+
+## Codex / Claude 接入
+
+完整步骤与模板见[接入指南](clients.md)。**Codex 使用 TOML 的 `mcp_servers`，Claude Code 使用 JSON 的 `mcpServers`，不能混用。** Codex 已实测真实只读工具调用；Claude目前只验证独立配置的Connected健康状态，未声称模型驱动调用已通过。使用独立 `CODEX_HOME` 的API模式不会自动继承默认配置。
 
 ## 使用
 
