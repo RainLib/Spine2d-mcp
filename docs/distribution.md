@@ -200,6 +200,18 @@ claude mcp remove --scope local spine-pipeline
 
 ## Maintainer checks
 
+### 0.2.1 public release — 2026-11-15
+
+- 官方 `mcp-publisher` 校验与发布成功；公开 API 搜索返回 `io.github.RainLib/spine-pipeline-mcp`，版本 `0.2.1`，状态 **active**、`isLatest: true`。[读回条目](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.RainLib%2Fspine-pipeline-mcp/versions/latest)
+- [GitHub Release](https://github.com/RainLib/Spine2d-mcp/releases/tag/v0.2.1) 对应提交 `9d791c5c7d920b82e500ad2a5ede9e3c8d6b3601`。实际下载 MCPB 的 SHA-256 与 Registry 的 `fileSha256` 一致；官方 MCPB CLI 2.1.2 清单校验通过。
+- macOS 和干净 Linux ARM64 容器均独立解包、安装依赖并运行清单中的 UV 启动命令。Linux 从公开 Registry 获取 URL 后下载包；两端都发现 15 个工具，完成真实读取、暂存、Mesh 权重修改和校验，源文件保持不变。
+- `uvx --from git+https://github.com/RainLib/Spine2d-mcp.git@v0.2.1` 远程构建成功，包版本为 `0.2.1`。154 项 pytest 与 wheel/sdist 构建通过。
+- Skills 完成一次真实远程安装，官方统计与审计端点均返回 HTTP 200；三个详情页均返回 HTTP 200，并显示对应 `SKILL.md` 和安装命令。**发布验证时全站搜索尚未返回这三项技能**；直接入口和安装命令已经可用。平台维护者说明收录来自正常安装，若数天后仍缺失才反馈。[维护者说明](https://github.com/vercel-labs/skills/issues/880)
+
+以上验证包含实际 MCP 协议调用；未把 SDK 启动验证等同于每一种桌面客户端的 MCPB 导入界面测试。客户端须支持 MCPB 0.4 UV，或使用已经验证的仓库插件／Git 安装路线。
+
+### 0.2.0 remote client installation
+
 2026-11-15 从公开 GitHub 提交 `1669c57d3f5389b5aed2f8cf4f79a7cfc4ce1cf4` 验证 0.2.0，使用干净的 Linux ARM64 容器，不挂载开发 checkout 或用户客户端配置。工具版本：Codex CLI 0.169.0、Claude Code 2.1.325、skills CLI 1.8.1、uv 0.13.8、Python 3.12.16。
 
 | 安装路径 | 已实测结果 |
