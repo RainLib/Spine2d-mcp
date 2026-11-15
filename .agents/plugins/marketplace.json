@@ -1,0 +1,12 @@
+{
+  "name": "rainlib-spine",
+  "interface": { "displayName": "RainLib Spine Tools" },
+  "plugins": [
+    {
+      "name": "spine-pipeline",
+      "source": { "source": "local", "path": "./" },
+      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "category": "Developer Tools"
+    }
+  ]
+}

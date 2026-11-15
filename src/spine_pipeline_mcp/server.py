@@ -7,6 +7,8 @@ from .pipeline import Pipeline
 from .validation import validate_document
 from .animation import copy_animation, retime_animation, set_bone_keys
 from .godot_check import validate_export
+from .mesh import inspect_meshes, get_weights, set_weights, replace_mesh
+from .mesh_policy import validate_mesh_policy
 
 mcp = MCPServer("Spine Pipeline MCP")
 
@@ -49,6 +51,46 @@ def job_validate(job_id: str) -> dict:
     """Run static structural checks against a staged job, without changing it."""
     _, doc = Pipeline(workspace()).read_job(job_id)
     return validate_document(doc)
+
+
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False))
+def mesh_inspect(relative_path: str = "", job_id: str = "") -> dict:
+    """Inventory skins/meshes, topology, continuity and weights. Supply exactly one source path or job ID. Static only."""
+    if bool(relative_path) == bool(job_id):
+        raise ValueError("Supply exactly one relative_path or job_id")
+    if job_id:
+        _, doc = Pipeline(workspace()).read_job(job_id)
+    else:
+        _, doc = workspace().read(relative_path)
+    return inspect_meshes(doc)
+
+
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False))
+def mesh_weights_get(job_id: str, skin: str, slot: str, attachment: str, offset: int = 0, limit: int = 100) -> dict:
+    """Read up to 256 vertices with named bones, bone-local bind coordinates and weights from a staged mesh."""
+    _, doc = Pipeline(workspace()).read_job(job_id)
+    return get_weights(doc, skin, slot, attachment, offset, limit)
+
+
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=False))
+def mesh_weights_set(job_id: str, skin: str, slot: str, attachment: str, updates: list[dict]) -> dict:
+    """NEW job: updates=[{vertex:0,weights:{bone:1}}]. Replace existing bindings' weights, normalize/sort; retain bind x/y. Spine 4.3 only; no deform/linked meshes. Does not preserve pose."""
+    return Pipeline(workspace()).transform(job_id, "mesh_weights_set",
+        lambda doc: set_weights(doc, skin, slot, attachment, updates))
+
+
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=False))
+def mesh_replace(job_id: str, skin: str, slot: str, attachment: str, geometry: dict) -> dict:
+    """NEW job: replace uvs/triangles/vertices/hull (optional edges), preserving texture. Continuous geometry only; Spine 4.3; no deform/linked meshes. Weighted vertices need explicit bind coordinates."""
+    return Pipeline(workspace()).transform(job_id, "mesh_replace",
+        lambda doc: replace_mesh(doc, skin, slot, attachment, geometry))
+
+
+@mcp.tool(annotations=ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=False))
+def mesh_policy_validate(job_id: str, policy: dict) -> dict:
+    """Check {rules:[{skin,slot,attachment,continuous?,max_vertices?,max_influences?,regions?}]}. Regions use vertices plus allowed_bones/rigid_bone/forbidden_ancestors. Static only."""
+    _, doc = Pipeline(workspace()).read_job(job_id)
+    return validate_mesh_policy(doc, policy)
 
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=False))

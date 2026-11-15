@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spine 游戏接入与换肤"
+  short_description: "接入游戏 Slot、挂点、换肤、装备与技能时序，验证原生表现和运行资源"
+  default_prompt: "使用 $spine-game-integration 将角色接入游戏，检查 Slot、技能挂点、换肤、装备和运行时验证。"

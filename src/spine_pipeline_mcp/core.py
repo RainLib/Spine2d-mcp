@@ -68,7 +68,7 @@ class Workspace:
         job_id = uuid.uuid4().hex
         job = self.staging / job_id
         job.mkdir(mode=0o700)
-        target = job / "source.json"
+        target = job / "skeleton.json"
         with target.open("xb") as f:
             f.write(raw)
         return {"job_id": job_id, "staged_path": str(target),

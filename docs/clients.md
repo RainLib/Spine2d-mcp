@@ -2,6 +2,8 @@
 
 [中文快速说明](#中文快速说明) · [Codex example](../examples/clients/codex.config.toml) · [Claude Code example](../examples/clients/claude.mcp.json)
 
+For fewer manual steps, use the [combined MCP + Skills plugin or direct Git installation](distribution.md). This guide covers the local checkout, explicit client configuration and optional native programs. If you already installed the combined plugin, configure its directories and verify it before adding another MCP entry; duplicate registration is unnecessary.
+
 ```text
 Codex or Claude Code (MCP client)
     ↓ stdio tool calls

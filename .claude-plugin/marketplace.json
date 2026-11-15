@@ -1,0 +1,12 @@
+{
+  "name": "rainlib-spine",
+  "description": "Reusable Spine asset-production tools and skills by RainLib.",
+  "owner": { "name": "RainLib" },
+  "plugins": [
+    {
+      "name": "spine-pipeline",
+      "source": "./",
+      "description": "Spine MCP and three reusable asset, rigging and game-integration skills."
+    }
+  ]
+}

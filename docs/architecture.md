@@ -2,10 +2,13 @@
 
 ## Implemented layers
 
-- `server.py`: 10 stdio tools using official MCP SDK 2.3.0.
+- `server.py`: 15 stdio tools using official MCP SDK 2.3.0.
 - `core.py`: bounded source reads and JSON-only staging copies.
 - `validation.py`: pure static bone/slot/mesh/weights/time checks, with explicit unsupported-semantic warnings.
 - `animation.py`: pure deep-copy animation copy, linear/stepped retime and bone timeline keys. Numeric Bezier curves rejected for retime/key edits.
+- `mesh.py`: indexed connectivity/fan/boundary inspection, named weighted-vertex codec, paged reads, immutable weight and explicit geometry edits.
+- `mesh_policy.py`: declarative budgets, continuous surfaces, rigid regions, direct-weight and ancestor exclusions.
+- `adapter.py`: explicit local Python callbacks plus generic validation/staging. No dynamic discovery/import from assets or MCP tool arguments.
 - `pipeline.py`: isolated referenced-image bundles, immutable transformations, configured exact-version CLI import/export on another copy.
 - `godot_check.py`: standalone generated project, PNG-first import, native resource load and brief sampling. No game autoloads.
 
@@ -17,9 +20,11 @@ Keep actual project roots, licensed executables, native Godot builds, character 
 
 Character-specific requirements such as a continuous body mesh, rigid face/props, cloth isolation, foot stability and loop quality need dedicated checks and visual evidence. Static mesh counts and a successful runtime load do not establish those properties.
 
+`ProjectAdapter` now provides the extension boundary: a local script imports the installed package, registers its own pure document transforms/validators, and calls `transform` to create a new job only after checks pass. Validators receive copies so they cannot mutate the candidate accidentally. Callbacks are trusted local Python with normal process privileges, not a sandbox. Generic tools never load callback paths from asset metadata. [Mesh guide](mesh.md) contains an example. No runtime project assets are imported into this package.
+
 ## Planned
 
-- Safe mesh/weight editing and whole-image mesh generation.
+- Automatic alpha-contour meshing, weight smoothing, bind-pose compensation and deform remapping.
 - Complete Spine schema/version profiles and linked-mesh/sequence/audio handling.
 - Full animation deformation sampling, rendered previews and per-game validators.
 - Live native-process resource quotas, cleanup policies and cancellation.

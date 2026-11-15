@@ -1,0 +1,36 @@
+{
+  "name": "spine-pipeline",
+  "version": "0.2.0",
+  "description": "Local Spine asset, mesh and animation tools with reusable game-production skills.",
+  "author": { "name": "RainLib" },
+  "homepage": "https://github.com/RainLib/Spine2d-mcp",
+  "repository": "https://github.com/RainLib/Spine2d-mcp",
+  "license": "MIT",
+  "icon": "./docs/assets/brand/icon.png",
+  "userConfig": {
+    "source_root": {
+      "type": "directory",
+      "title": "Source assets directory",
+      "description": "Absolute path to an existing directory of source asset copies. Must not overlap staging.",
+      "required": true
+    },
+    "staging_root": {
+      "type": "directory",
+      "title": "Staging output directory",
+      "description": "Absolute path to a separate output directory. Must not contain or be inside the source directory.",
+      "required": true
+    }
+  },
+  "mcpServers": {
+    "spine-pipeline": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["--directory", "${CLAUDE_PLUGIN_ROOT}", "run", "--locked", "--no-dev", "spine-pipeline-mcp"],
+      "timeout": 300000,
+      "env": {
+        "SPINE_MCP_SOURCE_ROOT": "${user_config.source_root}",
+        "SPINE_MCP_STAGING_ROOT": "${user_config.staging_root}"
+      }
+    }
+  }
+}
