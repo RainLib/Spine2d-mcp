@@ -14,8 +14,8 @@ requires-python = ">=3.11"
 dependencies = ["mcp==2.3.0"]
 
 [project.urls]
-Homepage = "https://github.com/RainLib/spine-pipeline-mcp"
-Issues = "https://github.com/RainLib/spine-pipeline-mcp/issues"
+Homepage = "https://github.com/RainLib/Spine2d-mcp"
+Issues = "https://github.com/RainLib/Spine2d-mcp/issues"
 
 [project.scripts]
 spine-pipeline-mcp = "spine_pipeline_mcp.server:main"

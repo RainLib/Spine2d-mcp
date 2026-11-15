@@ -1,6 +1,8 @@
-![Spine Pipeline MCP](assets/brand/banner.png)
+![Spine2d-mcp](assets/brand/banner.png)
 
-# Spine Pipeline MCP
+# Spine2d-mcp
+
+仓库/展示名称改为 **Spine2d-mcp**；Python包名和启动命令继续使用 `spine-pipeline-mcp`，不影响既有客户端。项目icon保持原样，仅横幅更新。横幅独立展示未修改的Spine官方标志，Codex与Claude Code使用普通文字，不表示官方背书。第三方标志不归本项目MIT许可，见[第三方声明](../THIRD_PARTY_NOTICES.md)。
 
 项目 **0.1.0**，采用 Python 官方 MCP SDK **2.3.0**，通过 stdio 使用。它不是“协议 2.0”或 FastMCP 2.x。
 
@@ -26,7 +28,7 @@
 ## 使用
 
 依赖安装与测试：`uv sync --locked`、`uv run --locked pytest -q`。
-客户端 command 为 `uv`，args 为 `--directory /path/to/spine-pipeline-mcp run --locked spine-pipeline-mcp`（各项拆为数组）。
+客户端 command 为 `uv`，args 为 `--directory /path/to/Spine2d-mcp run --locked spine-pipeline-mcp`（各项拆为数组）。
 
 必须设置两个不重叠目录：`SPINE_MCP_SOURCE_ROOT`、`SPINE_MCP_STAGING_ROOT`。首次使用测试副本。
 CLI额外需要 `SPINE_MCP_CLI`（已授权本机Spine绝对路径）、`SPINE_MCP_CLI_VERSION`（精确版本）；Godot检查需要 `SPINE_MCP_GODOT_EXECUTABLE`（含原生SpineSprite的版本，不能默认普通Godot）。

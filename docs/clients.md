@@ -5,7 +5,7 @@
 ```text
 Codex or Claude Code (MCP client)
     ↓ stdio tool calls
-Spine Pipeline MCP
+Spine2d-mcp
     ↓ copied JSON + images, exact-version CLI
 Licensed local Spine → isolated .spine / JSON / atlas / PNG
     ↓ optional native runtime check
@@ -17,8 +17,8 @@ Spine-enabled Godot in a separate generated project
 ## 1. Prepare the server and safe directories
 
 ```sh
-git clone https://github.com/RainLib/spine-pipeline-mcp.git
-cd spine-pipeline-mcp
+git clone https://github.com/RainLib/Spine2d-mcp.git
+cd Spine2d-mcp
 uv sync --locked
 uv run --locked pytest -q
 ```
@@ -37,7 +37,7 @@ Alternatively, this explicitly registers a stdio server in the current Codex hom
 codex mcp add spine-pipeline \
   --env SPINE_MCP_SOURCE_ROOT=/path/to/test-assets \
   --env SPINE_MCP_STAGING_ROOT=/path/to/separate-staging \
-  -- uv --directory /path/to/spine-pipeline-mcp run --locked spine-pipeline-mcp
+  -- uv --directory /path/to/Spine2d-mcp run --locked spine-pipeline-mcp
 codex mcp get spine-pipeline --json
 ```
 
@@ -65,7 +65,7 @@ For a persistent connection only in the current project:
 cd /path/to/your/project
 claude mcp add --transport stdio --scope local spine-pipeline \
   --env SPINE_MCP_SOURCE_ROOT=/path/to/test-assets SPINE_MCP_STAGING_ROOT=/path/to/separate-staging \
-  -- uv --directory /path/to/spine-pipeline-mcp run --locked spine-pipeline-mcp
+  -- uv --directory /path/to/Spine2d-mcp run --locked spine-pipeline-mcp
 claude mcp get spine-pipeline
 ```
 

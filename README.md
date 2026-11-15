@@ -1,12 +1,14 @@
-![Spine Pipeline MCP: a local bridge between Spine and coding agents](docs/assets/brand/banner.png)
+![Spine2d-mcp: a local bridge between Spine and coding agents](docs/assets/brand/banner.png)
 
-# Spine Pipeline MCP
+# Spine2d-mcp
 
-<img src="docs/assets/brand/icon.png" alt="Original Spine Pipeline MCP icon" width="80" align="right">
+<img src="docs/assets/brand/icon.png" alt="Original Spine2d-mcp icon" width="80" align="right">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **A local, staging-first MCP foundation for Spine asset pipelines.**
+
+The repository/display name is **Spine2d-mcp**; the Python package and executable remain `spine-pipeline-mcp` for existing client compatibility. The project icon is unchanged. The banner uses the official, unmodified Spine mark only to identify compatibility; Codex and Claude Code are plain-text labels, not official logos or endorsements. See [third-party notices](THIRD_PARTY_NOTICES.md).
 
 [中文说明](docs/README.zh-CN.md) · [Connect Codex / Claude](docs/clients.md) · [Architecture](docs/architecture.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
@@ -50,8 +52,8 @@ No Spine executable, game-specific engine binary, commercial assets, proprietary
 Requirements: Python **3.11+**, [uv](https://docs.astral.sh/uv/), and an MCP client supporting stdio. You do **not** need Spine installed to use the current JSON-only tools.
 
 ```sh
-git clone https://github.com/RainLib/spine-pipeline-mcp.git
-cd spine-pipeline-mcp
+git clone https://github.com/RainLib/Spine2d-mcp.git
+cd Spine2d-mcp
 uv sync --locked
 uv run --locked pytest -q
 
@@ -69,7 +71,7 @@ Codex uses a named TOML table, **not** a `mcpServers` JSON object. Review the [C
 ```toml
 [mcp_servers.spine-pipeline]
 command = "uv"
-args = ["--directory", "/path/to/spine-pipeline-mcp", "run", "--locked", "spine-pipeline-mcp"]
+args = ["--directory", "/path/to/Spine2d-mcp", "run", "--locked", "spine-pipeline-mcp"]
 startup_timeout_sec = 30
 tool_timeout_sec = 300
 
@@ -91,10 +93,10 @@ Claude Code uses `mcpServers` JSON. This format is **not** Codex TOML. Adapt the
       "type": "stdio",
       "timeout": 300000,
       "command": "uv",
-      "args": ["--directory", "/path/to/spine-pipeline-mcp", "run", "--locked", "spine-pipeline-mcp"],
+      "args": ["--directory", "/path/to/Spine2d-mcp", "run", "--locked", "spine-pipeline-mcp"],
       "env": {
-        "SPINE_MCP_SOURCE_ROOT": "/path/to/spine-pipeline-mcp/examples/source",
-        "SPINE_MCP_STAGING_ROOT": "/path/to/spine-pipeline-mcp/.staging"
+        "SPINE_MCP_SOURCE_ROOT": "/path/to/Spine2d-mcp/examples/source",
+        "SPINE_MCP_STAGING_ROOT": "/path/to/Spine2d-mcp/.staging"
       }
     }
   }
@@ -178,7 +180,7 @@ An inactive [CI template](docs/ci-workflow.yml.example) is provided for Linux Py
 
 ## License and third-party software
 
-Project code and synthetic examples: [MIT](LICENSE). Dependencies retain their own licenses. **Spine is commercial software by Esoteric Software and is not bundled or licensed by this project.** Future CLI integrations require a separately installed, appropriately licensed copy and compliance with the applicable Spine terms. This is an independent community project, not an official Spine integration.
+Project code and synthetic examples: [MIT](LICENSE). Third-party trademarks and the official Spine mark are excluded from that license; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Dependencies retain their own licenses. **Spine is commercial software by Esoteric Software and is not bundled or licensed by this project.** Future CLI integrations require a separately installed, appropriately licensed copy and compliance with the applicable Spine terms. This is an independent community project, not an official Spine integration.
 
 ## References
 

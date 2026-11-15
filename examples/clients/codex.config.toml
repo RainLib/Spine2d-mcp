@@ -2,7 +2,7 @@
 # Replace /path placeholders before use. No API key is required by this local MCP.
 [mcp_servers.spine-pipeline]
 command = "uv"
-args = ["--directory", "/path/to/spine-pipeline-mcp", "run", "--locked", "spine-pipeline-mcp"]
+args = ["--directory", "/path/to/Spine2d-mcp", "run", "--locked", "spine-pipeline-mcp"]
 startup_timeout_sec = 30
 tool_timeout_sec = 300
 
