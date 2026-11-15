@@ -18,7 +18,7 @@ The repository/display name is **Spine2d-mcp**; the Python package and executabl
 
 The **MCP executes tools**; the **Skills guide the agent's workflow**. Use both for asset preparation → Spine rigging/animation → runtime integration. All paths and game-specific conventions come from the user.
 
-> **Release status:** the skills and marketplace manifests are new, unreleased additions. The GitHub commands below require a published ref containing them; use a [local checkout](docs/distribution.md#local-checkout-before-publication) until then. A repository marketplace is separate from acceptance into a public plugin directory or the MCP Registry.
+> **Available from GitHub:** version **0.2.0**, all fifteen MCP tools, the three skills and both repository marketplace manifests are on `main`. The commands below install from this public repository. Public plugin-directory and MCP Registry listings are separate and are not claimed here.
 
 ### Option A: install the combined plugin
 
@@ -36,7 +36,7 @@ claude plugin marketplace add RainLib/Spine2d-mcp
 claude plugin install spine-pipeline@rainlib-spine
 ```
 
-Both bundle the MCP and all three skills. Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and Python **3.11+**, then complete the [one-time directory setup](docs/distribution.md#configure-the-plugin): Codex forwards the two `SPINE_MCP_*_ROOT` environment variables; Claude prompts for source and staging directories. Installing the plugin alone does not select your assets. JSON operations need no Spine license; native export requires your own installed, licensed Spine.
+Both bundle the MCP and all three skills. Install Git, [uv](https://docs.astral.sh/uv/getting-started/installation/) and Python **3.11+**, then complete the [one-time directory setup](docs/distribution.md#configure-the-plugin): Codex forwards the two `SPINE_MCP_*_ROOT` environment variables; Claude prompts for source and staging directories. Installing the plugin alone does not select your assets. JSON operations need no Spine license; native export requires your own installed, licensed Spine.
 
 ### Option B: install Skills and MCP separately
 
@@ -51,13 +51,14 @@ npx skills add RainLib/Spine2d-mcp \
 Replace `codex` with `claude-code`, or list both. Omit `--global` for a project installation. Skills installation does **not** register an MCP server. Add the MCP to Codex without manually cloning or creating a Python environment:
 
 ```sh
+uvx --from git+https://github.com/RainLib/Spine2d-mcp.git@main python -c 'import spine_pipeline_mcp'
 codex mcp add spine-pipeline \
   --env SPINE_MCP_SOURCE_ROOT=/absolute/path/to/test-assets \
   --env SPINE_MCP_STAGING_ROOT=/absolute/path/to/separate-staging \
   -- uvx --from git+https://github.com/RainLib/Spine2d-mcp.git@main spine-pipeline-mcp
 ```
 
-Replace both paths; source must exist and neither directory may contain the other. `uvx` installs from Git, so this command does not depend on a PyPI release. For repeatable setups, replace `main` with a published tag or full commit. See [Claude's equivalent command, cold-start setup, updates and registry status](docs/distribution.md). Choose one installation route per client to avoid duplicate tools and skills.
+The first command downloads/builds the server before the client's startup timeout applies. Replace both paths; source must exist and neither directory may contain the other. `uvx` installs from Git, so this command does not depend on a PyPI release. For repeatable setups, replace `main` with a published tag or full commit. See [Claude's equivalent command, timeout setup, updates and registry status](docs/distribution.md). Choose one installation route per client to avoid duplicate tools and skills.
 
 ### Use it
 
@@ -69,7 +70,7 @@ Start a new client session and first ask it to call `skeleton_inspect` on a JSON
 | `spine-rig-animation` | Adjust this rig's mesh and weights, then validate the requested animation and secondary motion. |
 | `spine-game-integration` | Integrate the character into the target I specify, including slots, attachments, skins and events. |
 
-In Codex, use `$spine-rig-animation`. In Claude, use `/spine-rig-animation` for a standalone skill or `/spine-pipeline:spine-rig-animation` for the plugin. Photo editors are optional integrations discovered at use time. Skills do not add missing editor APIs; see [capabilities and local extensions](docs/skills.md).
+In Codex, use `$spine-rig-animation` for a standalone skill or `$spine-pipeline:spine-rig-animation` for the plugin. In Claude, use `/spine-rig-animation` or `/spine-pipeline:spine-rig-animation`, respectively. Photo editors are optional integrations discovered at use time. Skills do not add missing editor APIs; see [capabilities and local extensions](docs/skills.md).
 
 ## What works today
 
@@ -113,7 +114,7 @@ No Spine executable, game-specific engine binary, commercial assets, proprietary
 
 ## Local development quick start
 
-Requirements: Python **3.11+**, [uv](https://docs.astral.sh/uv/), and an MCP client supporting stdio. You do **not** need Spine installed to use the current JSON-only tools.
+Requirements: Git, Python **3.11+**, [uv](https://docs.astral.sh/uv/), and an MCP client supporting stdio. You do **not** need Spine installed to use the current JSON-only tools.
 
 ```sh
 git clone https://github.com/RainLib/Spine2d-mcp.git

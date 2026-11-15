@@ -10,7 +10,7 @@
 
 MCP 执行素材读取、Mesh／权重修改、动画处理和原生导出；Skills 指导代理完成素材分层、绑定动画和游戏接入。推荐一起使用。
 
-> **发布状态：**本次新增的 Skills 和市场清单尚未发布；以下 GitHub 技能／插件命令需要这些文件进入所选远程 ref 后才能使用。现在可使用[本地 checkout 安装](distribution.md#local-checkout-before-publication)。仓库市场可安装与公共商城已收录是两件事。
+> **已通过 GitHub 提供：**`main` 包含 **0.2.0**、15 个 MCP 工具、三项 Skills 及两种仓库市场清单。下面的命令直接从公开仓库安装；公共商城和 MCP Registry 收录属于另外的发布流程，本项目不宣称已收录。
 
 ### 方式一：插件市场一起安装
 
@@ -28,7 +28,7 @@ claude plugin marketplace add RainLib/Spine2d-mcp
 claude plugin install spine-pipeline@rainlib-spine
 ```
 
-插件包含 MCP 和全部三项 Skills，需要本机有 [uv](https://docs.astral.sh/uv/getting-started/installation/) 与 Python 3.11+。首次使用仍需[设置素材目录和暂存目录](distribution.md#configure-the-plugin)：Codex 从启动环境读取 `SPINE_MCP_SOURCE_ROOT`、`SPINE_MCP_STAGING_ROOT`；Claude 可通过插件配置提示填写。两个目录不得重叠。仅操作 JSON 不需要安装 Spine；原生导出需要用户自己的正版 Spine。
+插件包含 MCP 和全部三项 Skills，需要本机有 Git、[uv](https://docs.astral.sh/uv/getting-started/installation/) 与 Python 3.11+。首次使用仍需[设置素材目录和暂存目录](distribution.md#configure-the-plugin)：Codex 从启动环境读取 `SPINE_MCP_SOURCE_ROOT`、`SPINE_MCP_STAGING_ROOT`；Claude 可通过插件配置提示填写。两个目录不得重叠。仅操作 JSON 不需要安装 Spine；原生导出需要用户自己的正版 Spine。
 
 ### 方式二：分别安装
 
@@ -43,17 +43,18 @@ npx skills add RainLib/Spine2d-mcp \
 Claude 使用 `--agent claude-code`；省略 `--global` 安装到当前项目。安装 Skills 不会自动连接 MCP。Codex 的 MCP 可免手动克隆安装：
 
 ```sh
+uvx --from git+https://github.com/RainLib/Spine2d-mcp.git@main python -c 'import spine_pipeline_mcp'
 codex mcp add spine-pipeline \
   --env SPINE_MCP_SOURCE_ROOT=/absolute/path/to/test-assets \
   --env SPINE_MCP_STAGING_ROOT=/absolute/path/to/separate-staging \
   -- uvx --from git+https://github.com/RainLib/Spine2d-mcp.git@main spine-pipeline-mcp
 ```
 
-先替换绝对路径；源目录需要已经存在。此命令从 Git 构建，不依赖 PyPI 发布；需要固定版本时将 `main` 换成真实的发布 tag 或完整 commit。首次安装预热、Claude 对应命令、升级卸载、商城与 MCP Registry 的发布区别见[安装与分发指南](distribution.md)。同一客户端选择一种安装路径，避免重复加载。
+第一条命令先完成下载与构建，避免首次启动超过客户端超时。先替换绝对路径；源目录需要已经存在。此命令从 Git 构建，不依赖 PyPI 发布；需要固定版本时将 `main` 换成真实的发布 tag 或完整 commit。超时配置、Claude 对应命令、升级卸载、商城与 MCP Registry 的发布区别见[安装与分发指南](distribution.md)。同一客户端选择一种安装路径，避免重复加载。
 
 ### 调用示例
 
-安装并配置后开启新会话，先要求代理调用 `skeleton_inspect` 读取源目录内的真实 JSON，再使用技能：
+安装并配置后开启新会话，先要求代理调用 `skeleton_inspect` 读取源目录内的真实 JSON，再使用技能。Codex 独立安装的调用示例：
 
 ```text
 使用 $spine-asset-prep 整理这些 AI 素材；有可用 PhotoCraft／Photoshop MCP 时优先在其中管理图层和预览。
@@ -61,7 +62,7 @@ codex mcp add spine-pipeline \
 使用 $spine-game-integration 接入我指定的游戏工程，处理 Slot、挂点、换肤和动画事件。
 ```
 
-Claude 的独立技能使用 `/spine-rig-animation`；插件安装使用 `/spine-pipeline:spine-rig-animation`。Photo 编辑器为可选项；技能按实际可用接口工作，不会自动补齐尚未实现的编辑能力。详见[技能指南](skills.md)。
+Codex 插件安装使用 `$spine-pipeline:spine-rig-animation` 等带命名空间的入口。Claude 的独立技能使用 `/spine-rig-animation`；插件安装使用 `/spine-pipeline:spine-rig-animation`。Photo 编辑器为可选项；技能按实际可用接口工作，不会自动补齐尚未实现的编辑能力。详见[技能指南](skills.md)。
 
 ## 已实现 15 个工具
 

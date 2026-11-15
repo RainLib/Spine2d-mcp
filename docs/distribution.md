@@ -10,11 +10,11 @@
 | `uvx --from git+https://…` | 从 Git 构建并启动 MCP | 所选 ref 中已有 Python 包；无需 PyPI |
 | 公共插件目录 / MCP Registry | 公开发现与客户端集成入口 | 各平台独立的提交、所有权验证或审核流程 |
 
-**当前状态：**技能和仓库市场文件是未发布新增项；这里的远程技能／市场命令是发布后的用法，不能把本地验证当成远程可安装或公共目录已收录。MCP 的 Git 安装只包含对应远程 ref 已发布的能力。本文不宣称已有 PyPI 包、公共插件目录条目或 MCP Registry 条目。
+**当前状态：**`main` 已提供 0.2.0、15 个 MCP 工具、三项技能和两种仓库市场清单，可按下面的命令从 GitHub 安装。本文不宣称已有 PyPI 包、公共插件目录条目或 MCP Registry 条目。实测范围见文末验证记录。
 
 ## Install the combined plugin
 
-需要 Python 3.11+、[uv](https://docs.astral.sh/uv/getting-started/installation/) 和支持插件的客户端。`uv` 必须在客户端进程的 PATH 内。首次启动会按随包的 `uv.lock` 安装依赖；无需手动创建 venv。没有 `codex plugin` 或 Claude `userConfig` 支持的旧客户端，请使用下面的独立安装方式。
+需要 Git、Python 3.11+、[uv](https://docs.astral.sh/uv/getting-started/installation/) 和支持插件的客户端。`uv` 必须在客户端进程的 PATH 内。首次启动会按随包的 `uv.lock` 安装依赖；无需手动创建 venv。没有 `codex plugin` 或 Claude `userConfig` 支持的旧客户端，请使用下面的独立安装方式。
 
 Codex：
 
@@ -60,7 +60,7 @@ claude plugin configure spine-pipeline@rainlib-spine
 
 原生步骤是可选的。在启动客户端的环境中增加 `SPINE_MCP_CLI`、精确匹配素材的 `SPINE_MCP_CLI_VERSION`、`SPINE_MCP_GODOT_EXECUTABLE`。Spine 商业程序和带原生 Spine 支持的 Godot 不包含在插件内，详见[客户端指南](clients.md#4-enable-the-local-spine--godot-steps)。PhotoCraft／Photoshop MCP 也由用户独立连接，技能会按当前可用接口探测。
 
-### Local checkout before publication
+### Local checkout
 
 本地目录应是通用仓库的绝对路径。Codex：
 
@@ -183,12 +183,19 @@ claude mcp remove --scope local spine-pipeline
 
 ## Maintainer checks
 
-2026-11-15 本地验证记录：
+2026-11-15 从公开 GitHub 提交 `1669c57d3f5389b5aed2f8cf4f79a7cfc4ce1cf4` 验证 0.2.0，使用干净的 Linux ARM64 容器，不挂载开发 checkout 或用户客户端配置。工具版本：Codex CLI 0.169.0、Claude Code 2.1.325、skills CLI 1.8.1、uv 0.13.8、Python 3.12.16。
 
-- `skills` CLI 1.8.1 从本地仓库发现三项技能，并在临时工作目录成功安装到 Codex 和 Claude；没有替换用户已有全局技能。
-- Claude Code 2.1.325 对插件和市场清单的严格校验通过；Codex CLI 0.169.0 通过临时配置覆盖发现 `spine-pipeline@rainlib-spine`，没有修改用户市场配置。
-- 在临时插件副本中使用清单的启动命令，通过官方 SDK 完成两种 MCP 配置的工具发现和 `skeleton_inspect`：本地均为 15 个工具。这验证启动命令与服务，不代表已实测两种客户端的完整市场安装／模型调用流程。
-- Git `uvx` 安装实际解析到 `6b1db83b2b5c0fe5007ac95972ec131130581f86`，只读调用通过；该远程版本有 10 个工具，本地新增 Mesh 工具和技能仍待发布。154 项测试及 wheel/sdist 构建通过。
+| 安装路径 | 已实测结果 |
+| --- | --- |
+| `npx skills add RainLib/Spine2d-mcp` | 远程发现三项；Codex／Claude 的用户级和项目级安装成功，用户级副本逐文件比对一致；更新与卸载成功 |
+| 独立 `uvx` MCP | Git 下载／构建、Codex 与 Claude 注册／读取配置／移除成功；15 个工具可用 |
+| Codex 仓库插件 | 添加远程市场、安装、刷新／重装及卸载成功；Codex app-server 实际发现该插件的 15 个工具和全部三项带命名空间的技能，无工具发现错误 |
+| Claude 仓库插件 | 添加远程市场、安装、两项目录配置、更新及卸载成功；`claude mcp list` 返回该插件 **Connected** |
+| Git clone 本地开发路径 | `uv sync --locked`、154 项 pytest、wheel/sdist 构建通过 |
+
+官方 MCP SDK 对独立配置、两种已安装插件及克隆目录的启动命令分别验证了工具发现、`skeleton_inspect`、`mesh_inspect`、JSON 暂存、权重读取／修改和 `job_validate`；均为 15 个工具，编辑产生新 job，源文件哈希保持不变。自动化安装使用 `--yes` 回答 Skills 的交互选择；用户可保留交互安装。
+
+这是安装、客户端加载和真实 MCP 调用验证，不声称本次测试包含模型驱动操作、Spine 商业软件导出、视觉效果验收或公共商城审核。原生步骤的既有验证范围见[客户端指南](clients.md#verification-record-and-limits)。
 
 发布前至少检查：
 
@@ -201,4 +208,4 @@ uv run --locked pytest -q
 uv build
 ```
 
-Codex 的列表检查应从这个本地仓库运行；若客户端尚未发现本地市场，先按上面的本地市场步骤添加。清单校验不等于完成安装、模型工具调用或公共目录审核。发布到 GitHub 后还需要在一个干净工作目录实测远程安装、目录配置和只读 `skeleton_inspect`，再更新 README 的发布状态。
+Codex 的列表检查应从这个本地仓库运行；若客户端尚未发现本地市场，先按上面的本地市场步骤添加。后续发布也应从干净环境重新执行远程安装和目录配置，核对实际工具／技能数量并执行真实 MCP 调用。仅清单校验通过不能替代这些检查。

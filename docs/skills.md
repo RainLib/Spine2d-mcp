@@ -22,7 +22,7 @@ Physics 的连续历史、暂停和重置，换肤后的附件恢复，表现事
 
 ## 推荐安装
 
-推荐通过仓库插件市场将 MCP 和三项技能一起安装，或者用 `skills.sh` CLI 单独拉取技能；详细步骤、远程发布状态和 MCP 连接方式见[安装与分发](distribution.md)。本次新增文件发布到 GitHub 后，可运行：
+推荐通过仓库插件市场将 MCP 和三项技能一起安装，或者用 `skills.sh` CLI 单独拉取技能；详细步骤、远程发布状态和 MCP 连接方式见[安装与分发](distribution.md)。从公开仓库安装：
 
 ```sh
 npx skills add RainLib/Spine2d-mcp \
@@ -30,7 +30,7 @@ npx skills add RainLib/Spine2d-mcp \
   --agent codex --global
 ```
 
-需要 Node.js 22.20+。Claude 使用 `--agent claude-code`，两者一起使用 `--agent codex claude-code`；去掉 `--global` 为当前项目安装。仅选一项时缩短 `--skill` 列表。发布前把仓库来源换成本地 checkout 的绝对路径。CLI 方式只安装技能，不连接 MCP；插件方式已经同时携带两者，不要重复安装同名技能。
+需要 Node.js 22.20+。Claude 使用 `--agent claude-code`，两者一起使用 `--agent codex claude-code`；去掉 `--global` 为当前项目安装。仅选一项时缩短 `--skill` 列表。本地开发时把仓库来源换成 checkout 的绝对路径。CLI 方式只安装技能，不连接 MCP；插件方式已经同时携带两者，不要重复安装同名技能。
 
 ## 本地开发与不使用 Node.js 的安装
 
@@ -49,7 +49,7 @@ ln -s "$PWD/skills/spine-game-integration" "${CODEX_HOME:-$HOME/.codex}/skills/s
 
 ## 调用
 
-安装后在支持刷新技能的客户端重新加载，或开启新会话。先验证 MCP 的 `skeleton_inspect` 实际成功，再在 Codex 使用：
+安装后在支持刷新技能的客户端重新加载，或开启新会话。先验证 MCP 的 `skeleton_inspect` 实际成功，再在独立安装 Skills 的 Codex 中使用：
 
 ```text
 使用 $spine-asset-prep 整理这些素材，优先使用可用的 photo MCP 管理图层与状态。
@@ -59,4 +59,4 @@ ln -s "$PWD/skills/spine-game-integration" "${CODEX_HOME:-$HOME/.codex}/skills/s
 
 三项技能允许按任务自动选择，也可以单独明确调用。只有用户后续指定了游戏制作／接入任务与目标，才在授权范围内读取或修改消费方工程。
 
-Claude 的独立技能可用 `/spine-asset-prep`、`/spine-rig-animation`、`/spine-game-integration`；通过插件安装后使用 `/spine-pipeline:spine-asset-prep` 等带插件命名空间的入口。升级会替换安装副本，自己的角色策略和扩展脚本继续放在仓库之外。
+Codex 插件安装使用 `$spine-pipeline:spine-asset-prep`、`$spine-pipeline:spine-rig-animation`、`$spine-pipeline:spine-game-integration`。Claude 的独立技能可用 `/spine-asset-prep`、`/spine-rig-animation`、`/spine-game-integration`；通过插件安装后使用 `/spine-pipeline:spine-asset-prep` 等带插件命名空间的入口。升级会替换安装副本，自己的角色策略和扩展脚本继续放在仓库之外。
