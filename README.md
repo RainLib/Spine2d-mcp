@@ -6,25 +6,40 @@
 
 [中文说明](docs/README.zh-CN.md) · [Architecture](docs/architecture.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
-> **Early prototype, project version 0.1.0.** This repository uses the official Python MCP SDK **2.3.0**. That SDK version is not a claim of “MCP protocol 2.0”, FastMCP 2.x, or project version 2.0. Only the two tools below are implemented.
+> **Early prototype, project version 0.1.0.** This repository uses the official Python MCP SDK **2.3.0**. That SDK version is not a claim of “MCP protocol 2.0”, FastMCP 2.x, or project version 2.0. The ten tools below are implemented. Output remains staging-only; there is no publication tool.
 
 ## What works today
 
-| Tool | Behavior | Writes |
-| --- | --- | --- |
-| `skeleton_inspect` | Inspect JSON version, bone names, animation names, SHA-256; warn on duplicate bones and missing parents | None |
-| `stage_json_copy` | Copy one validated JSON byte-for-byte into a fresh UUID job directory | Staging only |
+| Tool | Behavior |
+| --- | --- |
+| `skeleton_inspect` | Read source JSON version, bones, animations and SHA-256 |
+| `skeleton_validate` | Static source bone/reference/mesh/weight/timeline checks |
+| `stage_json_copy` | Byte-for-byte JSON-only copy to a new job |
+| `stage_asset_bundle` | Isolated JSON + referenced images; rebases image paths |
+| `job_validate` | Static validation of an existing staged skeleton |
+| `animation_copy` | Copy an animation under a new name in a new job |
+| `animation_retime` | Scale times by 1/speed in a new job; linear/stepped only |
+| `bone_keys_set` | Set rotate/translate/scale keys in a new job; Spine 4.3 rotate uses `value` |
+| `spine_export` | Explicitly configured licensed CLI imports a copied JSON and exports project/JSON/atlas/PNG |
+| `godot_validate` | Explicitly configured native Spine-enabled Godot loads and briefly samples animations in an isolated minimal project |
 
-Basic structure checking is **not** full Spine validation. A successful inspection does not prove that a skeleton loads, weights deform correctly, animation looks good, or a runtime version is compatible.
+All transformations create a **new job**, preserving their input job and the original source. Animation copying refuses existing target names. Setting keys replaces only the selected timeline in the new copy. Retiming/setting keys rejects numeric Bezier curves rather than silently distorting them.
+
+Static validation checks bone references/cycles, slot references, mesh UV/triangles, packed weighted vertices, bone indices, weight sums and timeline times. Multiple meshes are reported, not automatically rejected: attachment count alone cannot prove that the body mesh is continuous or that a rig follows an art policy.
+
+### Verified scope
+
+Local copy-only smoke testing exercised the real MCP stdio tools: stage a weighted-mesh rig, copy/retime/edit an animation, export with **Spine 4.3.26**, then import/load/initialize/briefly sample using a **Spine-enabled Godot 4.7.1 custom build**. This is one locally tested combination, not a cross-version compatibility guarantee. Local test assets and paths are **not distributed**.
 
 ### Not implemented
 
 - Spine editor GUI control or live timeline/weight-paint editing
-- Spine CLI import/export, `.spine` binary inspection, atlas/texture copying
-- Motion generation, mesh/weight/constraint editing, GIF or engine previews
-- Publishing output back into a game, background jobs, remote HTTP hosting
+- Automatic whole-art meshing, rig creation, weight editing or constraint authoring
+- GIF/rendered preview, full-timeline deformation/foot-drift/face-rigidity quality checks
+- Publishing back into a game, automatic retention/quota, remote HTTP hosting
+- Audio assets, image sequences or complete linked-mesh semantics
 
-No Spine executable, commercial assets, proprietary project files, or game-specific scripts are included. The example fixture is synthetic test data, not a production rig.
+No Spine executable, game-specific engine binary, commercial assets, proprietary project files or game scripts are included. The example fixture is synthetic schema-shaped test data, not a production rendering rig.
 
 ## Quick start
 
@@ -70,37 +85,70 @@ Example calls for either tool:
 
 Both root variables are required. Source must already exist. Source and staging must be separate and neither may contain the other. Tools fail closed if the configuration is absent or invalid. Source paths must be relative to the configured source root.
 
+## Optional native tools
+
+The JSON tools need no installed editor. To enable CLI export, explicitly configure:
+
+```sh
+export SPINE_MCP_CLI=/path/to/Spine
+export SPINE_MCP_CLI_VERSION=4.3.26
+export SPINE_MCP_GODOT_EXECUTABLE=/path/to/spine-enabled-godot
+```
+
+The skeleton's version must exactly match the configured CLI version. Spine must already be installed/licensed; the server does not acquire a license. Stock Godot does not necessarily contain the native `SpineSprite` class; `godot_validate` reports failure when it is absent. Run native tools only on assets you trust.
+
+Example sequence:
+
+```text
+stage_asset_bundle(relative_path="rig.json") -> job A
+animation_copy(job_id=A, source="idle", target="idle_preview") -> job B
+animation_retime(job_id=B, animation="idle_preview", speed=1.2) -> job C
+job_validate(job_id=C) -> static report
+spine_export(job_id=C) -> export job D
+godot_validate(job_id=D) -> independent validation job E
+```
+
+There is no automatic last step publishing D into a game. Inspect the outputs and reports before deciding how to use them.
+
 ## Architecture
 
 ```text
-MCP client
-    │ stdio (no listening port)
-    ▼
-Official Python MCP SDK server
-    ├── skeleton_inspect ──► read-only source root
-    └── stage_json_copy ──► new staging/<uuid>/source.json
-                              (never overwrites source)
+MCP client → stdio server
+  ├─ inspect / validate → source JSON (read only)
+  └─ stage bundle → immutable job A (JSON + images)
+      └─ animation transforms → new job B
+          └─ pinned Spine CLI → new export job C
+              └─ isolated Godot project → new check job D
 ```
 
-`server.py` is the protocol layer; `core.py` handles bounded reads, basic JSON checks and isolated copies. A future pipeline can add game-specific adapters around this core without embedding project paths or exposing arbitrary shell commands. See [the architecture and roadmap](docs/architecture.md).
+`core.py` handles source boundaries; `validation.py` and `animation.py` are pure JSON operations; `pipeline.py` handles staging and fixed CLI calls; `godot_check.py` builds a minimal standalone verification project. Per-game paths and art policies belong in a **local adapter outside this repository**. See [architecture](docs/architecture.md).
 
-**Why Python rather than Go?** Python makes it straightforward to reuse image processing, NumPy/Pillow mesh work, JSON transforms and validation scripts in existing art pipelines. Go has attractive binary distribution, but requiring a Python worker for those operations would add another boundary before it adds value. This foundation deliberately prioritizes iteration and testability over a standalone binary.
+**Why Python rather than Go?** Python can reuse image processing, NumPy/Pillow mesh work, JSON transforms and validation scripts in existing art pipelines. Go has attractive binary distribution, but requiring a Python worker for those operations would add another boundary before it adds value.
 
 ## Safety model
 
-- Explicit read root, JSON/`.spine-json` files only, 16 MiB per-file limit.
-- Reject absolute paths, parent traversal, symlinks, and non-regular files.
-- UUID staging directories, exclusive file creation, no overwrite/delete/publish tools.
-- No arbitrary shell, Spine execution, network listener, credential requirement or automatic client configuration.
-- Tool descriptions and annotations aid clients; they are not authorization enforcement.
+- Explicit source root, JSON-only reads, 16 MiB per JSON.
+- Reject requested absolute paths, parent traversal, symlinks and non-regular files.
+- Bundled images must resolve below the configured source; max 256 images / 128 MiB.
+- New UUID jobs; no overwrite/delete/publish tools or arbitrary shell text.
+- Native executable paths are administrator configuration, not tool-call arguments; commands use fixed argument arrays and timeouts.
+- Godot runs a generated minimal project with no game autoloads and isolated HOME/XDG.
+- Spine outputs are isolated, but the licensed editor can access its normal license/cache/settings. This is **not an OS sandbox**.
+- Log sizes are checked after each native command; they are not a hard live disk quota.
 
-This is **not an OS sandbox** and does not defend against a hostile local process changing directories/mounts during a request. Use trusted directories. JSON and tool output remain untrusted data; do not follow instructions embedded in asset metadata. Staging has no automatic retention/quota policy, so repeated copies can consume disk space. Delete expendable staging copies yourself after inspection. See [SECURITY.md](SECURITY.md).
+Use trusted directories/assets/executables. A hostile local process concurrently changing files/mounts is outside the threat model. Asset metadata and tool output are untrusted data, not instructions. Staging has no automatic retention/quota policy. See [SECURITY.md](SECURITY.md).
 
-## Testing and compatibility
+## Testing and CI
 
-Tests use synthetic temporary copies, never user assets. They cover successful inspection, unchanged source hashes, unique staging jobs, malformed input, size limits, traversal/symlink rejection, and real stdio MCP initialization/list/call round trips.
+```sh
+uv sync --locked
+uv run --locked pytest -q
+uv build
+```
 
-An inactive [CI template](docs/ci-workflow.yml.example) is provided for Linux with Python 3.11 and 3.12, plus a package build. **Hosted CI is not enabled or verified yet**: the publishing credential cannot write GitHub workflows. A maintainer with appropriate access can place this template at `.github/workflows/ci.yml` and inspect the resulting run. The initial implementation was also tested locally on macOS ARM with Python 3.12. Neither this nor the version string in the sample establishes compatibility with any Spine editor/runtime release.
+Unit tests use synthetic copies and mocked native executables. The stdio integration test invokes a real MCP subprocess. Licensed Spine/Godot tests are local, opt-in manual checks, not public CI fixtures.
+
+An inactive [CI template](docs/ci-workflow.yml.example) is provided for Linux Python 3.11/3.12 and a package build. **Hosted CI is not enabled or verified yet**: the publishing credential lacks workflow-write scope. A maintainer with appropriate access can place the template at `.github/workflows/ci.yml` and inspect the run.
 
 ## License and third-party software
 

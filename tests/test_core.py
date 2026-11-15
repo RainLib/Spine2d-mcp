@@ -50,7 +50,7 @@ def test_stdio_roundtrip(ws):
         params = StdioServerParameters(command=sys.executable, args=['-m', 'spine_pipeline_mcp.server'], env={**os.environ, 'SPINE_MCP_SOURCE_ROOT':str(ws.source), 'SPINE_MCP_STAGING_ROOT':str(ws.staging)})
         async with Client(params) as client:
             tools = await client.list_tools()
-            assert {t.name for t in tools.tools} == {'skeleton_inspect', 'stage_json_copy'}
+            assert {t.name for t in tools.tools} == {'skeleton_inspect', 'stage_json_copy', 'skeleton_validate', 'stage_asset_bundle', 'job_validate', 'animation_copy', 'animation_retime', 'bone_keys_set', 'spine_export', 'godot_validate'}
             result = await client.call_tool('skeleton_inspect', {'relative_path':'rig.json'})
             assert not result.is_error
             staged = await client.call_tool('stage_json_copy', {'relative_path':'rig.json'})

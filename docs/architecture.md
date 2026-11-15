@@ -1,26 +1,28 @@
-# Architecture and roadmap
+# Architecture
 
-## Implemented boundaries
+## Implemented layers
 
-- `src/spine_pipeline_mcp/server.py`: stdio protocol registration with official MCP SDK 2.3.0. Exactly two tools.
-- `src/spine_pipeline_mcp/core.py`: explicit source/staging configuration, path checks, 16 MiB bounded JSON read, minimal structure validation and UUID copies.
-- `tests/test_core.py`: isolated fixtures plus actual MCP subprocess transport tests.
-- `examples/source/minimal.json`: newly authored, synthetic schema-shaped fixture. Not a rendering compatibility test.
+- `server.py`: 10 stdio tools using official MCP SDK 2.3.0.
+- `core.py`: bounded source reads and JSON-only staging copies.
+- `validation.py`: pure static bone/slot/mesh/weights/time checks, with explicit unsupported-semantic warnings.
+- `animation.py`: pure deep-copy animation copy, linear/stepped retime and bone timeline keys. Numeric Bezier curves rejected for retime/key edits.
+- `pipeline.py`: isolated referenced-image bundles, immutable transformations, configured exact-version CLI import/export on another copy.
+- `godot_check.py`: standalone generated project, PNG-first import, native resource load and brief sampling. No game autoloads.
 
-The service does not discover local projects or read the entire filesystem. It reads only a requested relative JSON path below a configured root. Tool return values include paths and names; an MCP client will see those values. Choose roots accordingly.
+The source root and staging root must not overlap. Jobs have UUID identifiers; arbitrary paths cannot be supplied for native outputs. A tool cannot publish to a game or execute an arbitrary shell command.
 
-## Planned, not implemented
+## Local adapter boundary
 
-1. **Validation layer**: typed Spine data models, bone graph cycles, attachment/skin references, weight checks and explicit editor/runtime version profiles.
-2. **Transformation layer**: pure functions for animation operations and mesh edits, immutable inputs, diff and provenance manifests.
-3. **CLI adapter**: fixed executable and version, argument arrays rather than shell text, timeout, bounded logs, output checks, staging-only imports/exports. No generic command-execution tool.
-4. **Preview adapter**: matching runtime/engine render tests for mesh continuity, deformation and transitions. Separate static checks from visual evidence.
-5. **Publication step**: separate explicit operation with output diff, destination policy, backups and user authorization. Never an implicit side effect of preview or validation.
+Keep actual project roots, licensed executables, native Godot builds, character policies and smoke-test evidence outside this public repository. An adapter should set `SPINE_MCP_SOURCE_ROOT`, `SPINE_MCP_STAGING_ROOT`, `SPINE_MCP_CLI`, `SPINE_MCP_CLI_VERSION` and `SPINE_MCP_GODOT_EXECUTABLE`. The generic core must not import production build scripts with side effects.
 
-Game-specific adapters should describe roots, asset conventions, required versions and validators. They must not bake private project paths into the reusable core. A legacy export script that writes straight to production directories cannot be exposed as an MCP tool unchanged.
+Character-specific requirements such as a continuous body mesh, rigid face/props, cloth isolation, foot stability and loop quality need dedicated checks and visual evidence. Static mesh counts and a successful runtime load do not establish those properties.
 
-## Current limits
+## Planned
 
-Validation checks skeleton/bones shape, animation container type, duplicate names and absent parents. It does not validate full format semantics, constraints, cycle-free hierarchy, mesh topology, weights, atlas references or version compatibility. `.spine` binaries are unsupported. Staging preserves only the selected JSON; it is not a complete movable asset bundle.
+- Safe mesh/weight editing and whole-image mesh generation.
+- Complete Spine schema/version profiles and linked-mesh/sequence/audio handling.
+- Full animation deformation sampling, rendered previews and per-game validators.
+- Live native-process resource quotas, cleanup policies and cancellation.
+- Separately authorized publication with diffs/backups; never implicit in preview.
 
-The path checks are a boundary for normal requests, not a race-proof defense against malicious local processes. Memory/CPU use from parsing is bounded indirectly by the byte limit, not a process quota. Disk quota/retention and cancellation/timeouts for future long-running jobs remain roadmap work.
+Native commands currently have timeouts and post-run log-size checks, not a hardened process sandbox or strict live disk quota. Godot's isolated HOME avoids the game's user-data path; Spine uses its normal licensed editor state. No claim of zero editor cache/settings changes is made.
