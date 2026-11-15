@@ -4,13 +4,13 @@
 
 仓库/展示名称改为 **Spine2d-mcp**；Python包名和启动命令继续使用 `spine-pipeline-mcp`，不影响既有客户端。项目icon保持原样，仅横幅更新。横幅独立展示未修改的Spine官方标志，Codex与Claude Code使用普通文字，不表示官方背书。第三方标志不归本项目MIT许可，见[第三方声明](../THIRD_PARTY_NOTICES.md)。
 
-项目 **0.2.0**，采用 Python 官方 MCP SDK **2.3.0**，通过 stdio 使用。它不是“协议 2.0”或 FastMCP 2.x。
+项目 **0.2.1**，采用 Python 官方 MCP SDK **2.3.0**，通过 stdio 使用。它不是“协议 2.0”或 FastMCP 2.x。
 
 ## 安装 MCP 和 Skills
 
 MCP 执行素材读取、Mesh／权重修改、动画处理和原生导出；Skills 指导代理完成素材分层、绑定动画和游戏接入。推荐一起使用。
 
-> **已通过 GitHub 提供：**`main` 包含 **0.2.0**、15 个 MCP 工具、三项 Skills 及两种仓库市场清单。下面的命令直接从公开仓库安装；公共商城和 MCP Registry 收录属于另外的发布流程，本项目不宣称已收录。
+**发现与下载入口：**[skills.sh 三项技能](https://skills.sh/rainlib/spine2d-mcp) · [官方 MCP Registry 条目](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.RainLib%2Fspine-pipeline-mcp/versions/latest) · [0.2.1 MCPB 发布包](https://github.com/RainLib/Spine2d-mcp/releases/tag/v0.2.1)。在 [Registry 搜索页](https://registry.modelcontextprotocol.io/) 输入 `io.github.RainLib/spine-pipeline-mcp`。下面的仓库插件包含 15 个 MCP 工具和全部三项 Skills。
 
 ### 方式一：插件市场一起安装
 
@@ -50,7 +50,13 @@ codex mcp add spine-pipeline \
   -- uvx --from git+https://github.com/RainLib/Spine2d-mcp.git@main spine-pipeline-mcp
 ```
 
-第一条命令先完成下载与构建，避免首次启动超过客户端超时。先替换绝对路径；源目录需要已经存在。此命令从 Git 构建，不依赖 PyPI 发布；需要固定版本时将 `main` 换成真实的发布 tag 或完整 commit。超时配置、Claude 对应命令、升级卸载、商城与 MCP Registry 的发布区别见[安装与分发指南](distribution.md)。同一客户端选择一种安装路径，避免重复加载。
+第一条命令先完成下载与构建，避免首次启动超过客户端超时。先替换绝对路径；源目录需要已经存在。此命令从 Git 构建，不依赖 PyPI 发布；需要固定版本时将 `main` 换成 `v0.2.1` 或完整 commit。超时配置、Claude 对应命令、升级卸载、商城与 MCP Registry 的发布区别见[安装与分发指南](distribution.md)。同一客户端选择一种安装路径，避免重复加载。
+
+### 方式三：从官方 Registry 获取 MCPB
+
+Registry 名称为 **`io.github.RainLib/spine-pipeline-mcp`**，登记的安装包是 GitHub Releases 上的 [MCPB 文件](https://github.com/RainLib/Spine2d-mcp/releases/download/v0.2.1/spine-pipeline-mcp-0.2.1.mcpb)。支持 **MCPB 0.4 与 UV runtime** 的客户端可导入这个文件，再按提示填写素材目录和暂存目录。此包支持 macOS/Linux，首次启动安装 Python 依赖，内容为 MCP 服务；三项 Skills 按方式二单独安装。
+
+Registry 提供发现元数据，具体安装功能取决于客户端；Codex／Claude Code 可以直接采用方式一或二。包校验和与完整要求见[Registry 安装指南](distribution.md#install-from-the-official-mcp-registry)。
 
 ### 调用示例
 

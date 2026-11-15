@@ -4,9 +4,9 @@
 
 | 技能 | 使用场景 | 入口 |
 | --- | --- | --- |
-| `spine-asset-prep` | 可选探测 PhotoCraft／Photoshop MCP；优先管理可编辑图层、状态预览及 Spine 素材交接 | [SKILL.md](../skills/spine-asset-prep/SKILL.md) |
-| `spine-rig-animation` | 骨架、Mesh、权重、动画效果和物理次级运动；暂存、原生验证与本地扩展 | [SKILL.md](../skills/spine-rig-animation/SKILL.md) |
-| `spine-game-integration` | Slot、附件、挂点、换肤、装备、技能事件与运行资源验证 | [SKILL.md](../skills/spine-game-integration/SKILL.md) |
+| `spine-asset-prep` | 可选探测 PhotoCraft／Photoshop MCP；优先管理可编辑图层、状态预览及 Spine 素材交接 | [skills.sh](https://skills.sh/rainlib/spine2d-mcp/spine-asset-prep) · [SKILL.md](../skills/spine-asset-prep/SKILL.md) |
+| `spine-rig-animation` | 骨架、Mesh、权重、动画效果和物理次级运动；暂存、原生验证与本地扩展 | [skills.sh](https://skills.sh/rainlib/spine2d-mcp/spine-rig-animation) · [SKILL.md](../skills/spine-rig-animation/SKILL.md) |
+| `spine-game-integration` | Slot、附件、挂点、换肤、装备、技能事件与运行资源验证 | [skills.sh](https://skills.sh/rainlib/spine2d-mcp/spine-game-integration) · [SKILL.md](../skills/spine-game-integration/SKILL.md) |
 
 ## 可选 photo 编辑器
 

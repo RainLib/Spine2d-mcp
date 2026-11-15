@@ -1,6 +1,6 @@
 {
   "name": "spine-pipeline",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Local Spine asset, mesh and animation tools with reusable game-production skills.",
   "author": { "name": "RainLib" },
   "homepage": "https://github.com/RainLib/Spine2d-mcp",

@@ -1,0 +1,67 @@
+{
+  "manifest_version": "0.4",
+  "name": "spine-pipeline-mcp",
+  "display_name": "Spine2d-mcp",
+  "version": "0.2.1",
+  "description": "Local Spine JSON, mesh, weight and animation tools with isolated staging.",
+  "long_description": "Inspect Spine assets, edit meshes and animation in new staging jobs, and optionally use a separately installed licensed Spine CLI and Spine-enabled Godot. Requires distinct source and staging directories. A host supporting MCPB 0.4 UV runtime installs Python dependencies. Skills are installed separately through skills.sh or the repository plugin marketplaces.",
+  "author": { "name": "RainLib", "url": "https://github.com/RainLib" },
+  "repository": { "type": "git", "url": "https://github.com/RainLib/Spine2d-mcp" },
+  "homepage": "https://github.com/RainLib/Spine2d-mcp",
+  "documentation": "https://github.com/RainLib/Spine2d-mcp/blob/main/docs/distribution.md",
+  "support": "https://github.com/RainLib/Spine2d-mcp/issues",
+  "icon": "docs/assets/brand/icon.png",
+  "server": {
+    "type": "uv",
+    "entry_point": "mcpb/launch.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run", "--directory", "${__dirname}", "--locked", "--no-dev", "mcpb/launch.py"],
+      "env": {
+        "SPINE_MCP_SOURCE_ROOT": "${user_config.source_root}",
+        "SPINE_MCP_STAGING_ROOT": "${user_config.staging_root}",
+        "SPINE_MCP_CLI": "${user_config.spine_cli}",
+        "SPINE_MCP_CLI_VERSION": "${user_config.spine_cli_version}",
+        "SPINE_MCP_GODOT_EXECUTABLE": "${user_config.godot_executable}"
+      }
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "linux"],
+    "runtimes": { "python": ">=3.11" }
+  },
+  "user_config": {
+    "source_root": {
+      "type": "directory",
+      "title": "Source assets directory",
+      "description": "Existing absolute directory of asset copies; use a real path without symlinks.",
+      "required": true
+    },
+    "staging_root": {
+      "type": "directory",
+      "title": "Staging output directory",
+      "description": "Separate absolute output directory; must not overlap or contain the source directory.",
+      "required": true
+    },
+    "spine_cli": {
+      "type": "file",
+      "title": "Licensed Spine executable (optional)",
+      "description": "Absolute path to an existing, appropriately licensed Spine CLI. Not needed for JSON tools.",
+      "default": ""
+    },
+    "spine_cli_version": {
+      "type": "string",
+      "title": "Exact Spine version (optional)",
+      "description": "Required for native export when Spine is configured, for example 4.3.26; must match the asset.",
+      "default": ""
+    },
+    "godot_executable": {
+      "type": "file",
+      "title": "Spine-enabled Godot executable (optional)",
+      "description": "Absolute path to a Godot build containing native SpineSprite, for optional runtime checks.",
+      "default": ""
+    }
+  },
+  "keywords": ["spine", "spine2d", "animation", "mesh", "weights", "game-assets"],
+  "license": "MIT"
+}

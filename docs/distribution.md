@@ -8,9 +8,11 @@
 | `npx skills add RainLib/Spine2d-mcp` | 从 GitHub 安装技能到选定客户端 | `skills/` 必须已推送到所选 ref；无需先申请排行榜收录 |
 | Codex / Claude 仓库市场 | 一个插件包含 MCP 和全部技能 | 对应市场清单及插件文件必须已推送到所选 ref |
 | `uvx --from git+https://…` | 从 Git 构建并启动 MCP | 所选 ref 中已有 Python 包；无需 PyPI |
-| 公共插件目录 / MCP Registry | 公开发现与客户端集成入口 | 各平台独立的提交、所有权验证或审核流程 |
+| [skills.sh 目录](https://skills.sh/rainlib/spine2d-mcp) | 三项技能的说明与安装命令 | 已有公开详情页；搜索索引由平台更新 |
+| [官方 MCP Registry](https://registry.modelcontextprotocol.io/) | MCP 元数据、版本和 MCPB 下载地址 | 搜索 `io.github.RainLib/spine-pipeline-mcp`；导入包需要客户端支持 MCPB 0.4 UV |
+| Codex / Claude 公共插件目录 | 客户端公共插件发现入口 | 与本仓库市场独立的提交／审核流程 |
 
-**当前状态：**`main` 已提供 0.2.0、15 个 MCP 工具、三项技能和两种仓库市场清单，可按下面的命令从 GitHub 安装。本文不宣称已有 PyPI 包、公共插件目录条目或 MCP Registry 条目。实测范围见文末验证记录。
+**当前版本：0.2.1。** MCP 包通过 GitHub Releases 分发，Registry 名称为 `io.github.RainLib/spine-pipeline-mcp`，三项技能在 [skills.sh](https://skills.sh/rainlib/spine2d-mcp) 提供详情与安装入口。另有可直接添加的 Codex／Claude 仓库市场。本项目没有发布 PyPI 包，也不声称通过 Codex／Claude 公共插件目录审核。实测范围见文末验证记录。
 
 ## Install the combined plugin
 
@@ -99,7 +101,22 @@ npx skills add RainLib/Spine2d-mcp \
 
 `--agent claude-code` 为 Claude 安装；`--agent codex claude-code` 同时为二者安装。`--skill` 后可只保留需要的技能。省略 `--global` 是项目级安装。安装保留技能目录内的 `agents/`、`references/`，不需要逐个复制文件；**它不会安装或配置 MCP**。
 
-[skills.sh FAQ](https://skills.sh/docs/faq) 说明排行榜依据安装统计自动发现技能；仓库直接安装不以排行榜展示为前提。可以使用 CLI 的 `DISABLE_TELEMETRY=1` 关闭统计。这里不制造安装量，也不把 CLI 兼容视为平台认证。
+[skills.sh 目录页](https://skills.sh/rainlib/spine2d-mcp) 提供三个入口：[素材与图层](https://skills.sh/rainlib/spine2d-mcp/spine-asset-prep)、[骨架与动画](https://skills.sh/rainlib/spine2d-mcp/spine-rig-animation)、[游戏接入与换肤](https://skills.sh/rainlib/spine2d-mcp/spine-game-integration)。仓库根目录的 `skills.sh.json` 定义分组和顺序。
+
+[skills.sh FAQ](https://skills.sh/docs/faq) 说明平台依据正常安装统计自动发现技能；搜索索引和排行榜更新由平台处理，直接安装与详情页访问不依赖搜索同步。可以使用 CLI 的 `DISABLE_TELEMETRY=1` 关闭统计。
+
+## Install from the official MCP Registry
+
+在 [Official MCP Registry](https://registry.modelcontextprotocol.io/) 搜索 **`io.github.RainLib/spine-pipeline-mcp`**。可直接读取[最新条目 JSON](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.RainLib%2Fspine-pipeline-mcp/versions/latest)，其中 `packages[0]` 给出 GitHub Releases 下载地址与 `fileSha256`；发布源码中的同一份元数据见 [server.json](../server.json)。
+
+1. 下载 [0.2.1 MCPB 安装包](https://github.com/RainLib/Spine2d-mcp/releases/download/v0.2.1/spine-pipeline-mcp-0.2.1.mcpb)。支持 Registry 的客户端也可以从登记的 URL 获取它。
+2. 使用支持 **MCPB manifest 0.4、`server.type: uv`** 的客户端导入。目标平台为 macOS/Linux；需要可用的 `uv` 与 Python 3.11+。客户端／uv 在首次启动时联网安装锁定依赖。
+3. 按提示填写现有素材源目录与独立暂存目录，两者不能重叠，不得使用符号链接路径。Spine CLI、其精确版本与 Godot 可选；JSON 工具不依赖商业软件。
+4. 重新加载后调用 `skeleton_inspect` 验证连接。三项 Skills 通过上一节单独安装。
+
+MCPB 是包含源码、锁文件和清单的安装包，不内置 Python、Spine、Godot 或用户素材。Registry 托管发现元数据，不是远程 MCP 服务，也不存在适用于所有客户端的统一安装命令。如果客户端不支持这个 MCPB 版本，Codex／Claude Code 可使用已验证的仓库插件或下方 `uvx` 路线。
+
+Registry 使用 MCPB 分发，因此无需 PyPI 账号。不要将安装命令缩短为 `uvx spine-pipeline-mcp`；本项目没有同名 PyPI 发布。
 
 ## Install MCP separately
 
@@ -172,12 +189,12 @@ claude mcp remove --scope local spine-pipeline
 
 ## Public directories and MCP Registry
 
-仓库市场已经能承载“添加来源 → 安装插件”的流程，无需先被公共商城收录。进一步公开分发是不同步骤：
+这些入口的发布与安装机制不同：
 
-- **skills.sh：**公开 `skills/`，验证远程 `--list` 和安装，按平台安装统计与发现规则展示。[官方说明](https://skills.sh/docs/faq)
+- **skills.sh：**三项技能已有公开详情页，远程安装已验证；平台负责搜索索引和安装统计。没有独立的手工上架申请。[官方说明](https://skills.sh/docs/faq)
 - **Codex / ChatGPT 公共插件目录：**需要独立提交和审核；本服务是本机 stdio，不能冒充云端 HTTP MCP。按平台的 desktop-only 插件要求处理。[插件打包](https://developers.openai.com/plugins/build/plugins)、[发布入口](https://developers.openai.com/plugins/deploy/submission)
 - **Claude 公共插件目录：**自建仓库市场可直接由用户添加；公共目录审核与自建市场是两件事。[官方市场指南](https://code.claude.com/docs/en/plugin-marketplaces)
-- **MCP Registry：**登记服务元数据，不托管 Python 包，也不提供通用于所有客户端的安装命令。本项目若采用 PyPI 分发，需要先发布真实包版本、加入 `mcp-name` 所有权标记，再准备 `server.json`、登录验证 `io.github.RainLib/…` 命名空间并用 `mcp-publisher` 校验／发布。不要在实际发布前给用户 `uvx spine-pipeline-mcp` 作为已经可用的命令。[Registry quickstart](https://modelcontextprotocol.io/registry/quickstart)、[包类型与验证](https://modelcontextprotocol.io/registry/package-types)
+- **MCP Registry：**本项目使用 GitHub 身份验证 `io.github.RainLib/…` 命名空间，登记 GitHub Releases 的 MCPB URL 和校验和。发布清单为 `server.json`；包清单为 `manifest.json`。[Registry quickstart](https://modelcontextprotocol.io/registry/quickstart)、[包类型与验证](https://modelcontextprotocol.io/registry/package-types)、[MCPB UV 格式](https://github.com/modelcontextprotocol/mcpb/blob/main/MANIFEST.md)
 
 目前不需要为安装引入 npm 包装器、远程托管、API key 或游戏工程依赖。
 
@@ -209,3 +226,23 @@ uv build
 ```
 
 Codex 的列表检查应从这个本地仓库运行；若客户端尚未发现本地市场，先按上面的本地市场步骤添加。后续发布也应从干净环境重新执行远程安装和目录配置，核对实际工具／技能数量并执行真实 MCP 调用。仅清单校验通过不能替代这些检查。
+
+### MCPB / Registry release maintenance
+
+同步 `pyproject.toml`、`manifest.json`、两个插件清单的版本，执行 `uv lock`，然后从仓库根目录构建和验证：
+
+```sh
+npx --yes @anthropic-ai/mcpb@2.1.2 validate manifest.json
+uv run --locked python scripts/build_mcpb.py
+uv run --locked python scripts/smoke_mcpb.py dist/spine-pipeline-mcp-0.2.1.mcpb
+```
+
+构建器只打包白名单中的公开运行文件，输出 SHA-256。同步 `server.json` 的版本、Release URL 与 `fileSha256`，完成提交并上传对应 GitHub Release 后，使用[官方发布器](https://github.com/modelcontextprotocol/registry/releases)验证并发布：
+
+```sh
+mcp-publisher validate server.json
+mcp-publisher login github
+mcp-publisher publish server.json
+```
+
+必须先让下载 URL 实际可用。发布后从 Registry API 读回元数据，重新下载它指向的文件，用 `scripts/smoke_mcpb.py <downloaded.mcpb> --sha256 <fileSha256>` 验证。已经发布的版本和文件保持不变；后续修改递增版本并发布新包。`server.json` 不进入 MCPB，避免校验和自引用。

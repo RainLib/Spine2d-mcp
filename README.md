@@ -12,13 +12,13 @@ The repository/display name is **Spine2d-mcp**; the Python package and executabl
 
 [中文说明](docs/README.zh-CN.md) · [Install / marketplaces](docs/distribution.md) · [Connect Codex / Claude](docs/clients.md) · [Authoring skills](docs/skills.md) · [Architecture](docs/architecture.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
-> **Early prototype, project version 0.2.0.** This repository uses the official Python MCP SDK **2.3.0**. That SDK version is not a claim of “MCP protocol 2.0”, FastMCP 2.x, or project version 2.0. The fifteen tools below are implemented. Output remains staging-only; there is no publication tool.
+> **Early prototype, project version 0.2.1.** This repository uses the official Python MCP SDK **2.3.0**. That SDK version is not a claim of “MCP protocol 2.0”, FastMCP 2.x, or project version 2.0. The fifteen tools below are implemented. Output remains staging-only; there is no publication tool.
 
 ## Install MCP + Skills
 
 The **MCP executes tools**; the **Skills guide the agent's workflow**. Use both for asset preparation → Spine rigging/animation → runtime integration. All paths and game-specific conventions come from the user.
 
-> **Available from GitHub:** version **0.2.0**, all fifteen MCP tools, the three skills and both repository marketplace manifests are on `main`. The commands below install from this public repository. Public plugin-directory and MCP Registry listings are separate and are not claimed here.
+**Discovery and downloads:** [three Skills on skills.sh](https://skills.sh/rainlib/spine2d-mcp) · [official MCP Registry entry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.RainLib%2Fspine-pipeline-mcp/versions/latest) · [version 0.2.1 MCPB release](https://github.com/RainLib/Spine2d-mcp/releases/tag/v0.2.1). In the [Registry search](https://registry.modelcontextprotocol.io/), enter `io.github.RainLib/spine-pipeline-mcp`. The repository plugins below combine all fifteen MCP tools and the three skills.
 
 ### Option A: install the combined plugin
 
@@ -58,7 +58,13 @@ codex mcp add spine-pipeline \
   -- uvx --from git+https://github.com/RainLib/Spine2d-mcp.git@main spine-pipeline-mcp
 ```
 
-The first command downloads/builds the server before the client's startup timeout applies. Replace both paths; source must exist and neither directory may contain the other. `uvx` installs from Git, so this command does not depend on a PyPI release. For repeatable setups, replace `main` with a published tag or full commit. See [Claude's equivalent command, timeout setup, updates and registry status](docs/distribution.md). Choose one installation route per client to avoid duplicate tools and skills.
+The first command downloads/builds the server before the client's startup timeout applies. Replace both paths; source must exist and neither directory may contain the other. `uvx` installs from Git, so this command does not depend on a PyPI release. For repeatable setups, replace `main` with `v0.2.1` or a full commit. See [Claude's equivalent command, timeout setup, updates and registry details](docs/distribution.md). Choose one installation route per client to avoid duplicate tools and skills.
+
+### Option C: install the Registry MCPB bundle
+
+The official Registry name is **`io.github.RainLib/spine-pipeline-mcp`**. Its package points to the [MCPB download](https://github.com/RainLib/Spine2d-mcp/releases/download/v0.2.1/spine-pipeline-mcp-0.2.1.mcpb), with a SHA-256 checksum in [server.json](server.json). Import this file in a client supporting **MCPB 0.4 and the UV runtime**, then supply the source and staging directories when prompted. This bundle targets macOS/Linux and installs Python dependencies on first launch; it contains the MCP server. Install Skills separately with Option B.
+
+The Registry provides discovery metadata; installation support depends on the client. Codex/Claude Code users can use Option A or B. See the [bundle requirements and verification steps](docs/distribution.md#install-from-the-official-mcp-registry).
 
 ### Use it
 
@@ -66,9 +72,9 @@ Start a new client session and first ask it to call `skeleton_inspect` on a JSON
 
 | Skill | Example request |
 | --- | --- |
-| `spine-asset-prep` | Prepare these AI assets for Spine; use a connected PhotoCraft/Photoshop MCP for layers and previews when available. |
-| `spine-rig-animation` | Adjust this rig's mesh and weights, then validate the requested animation and secondary motion. |
-| `spine-game-integration` | Integrate the character into the target I specify, including slots, attachments, skins and events. |
+| [`spine-asset-prep`](https://skills.sh/rainlib/spine2d-mcp/spine-asset-prep) | Prepare these AI assets for Spine; use a connected PhotoCraft/Photoshop MCP for layers and previews when available. |
+| [`spine-rig-animation`](https://skills.sh/rainlib/spine2d-mcp/spine-rig-animation) | Adjust this rig's mesh and weights, then validate the requested animation and secondary motion. |
+| [`spine-game-integration`](https://skills.sh/rainlib/spine2d-mcp/spine-game-integration) | Integrate the character into the target I specify, including slots, attachments, skins and events. |
 
 In Codex, use `$spine-rig-animation` for a standalone skill or `$spine-pipeline:spine-rig-animation` for the plugin. In Claude, use `/spine-rig-animation` or `/spine-pipeline:spine-rig-animation`, respectively. Photo editors are optional integrations discovered at use time. Skills do not add missing editor APIs; see [capabilities and local extensions](docs/skills.md).
 

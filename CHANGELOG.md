@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1 — 2026-11-15
+
+- MCPB 0.4 UV bundle for public Registry distribution, with required source/staging configuration and optional native executable settings.
+- Deterministic bundle packaging includes only public runtime files; no user settings, credentials, game assets or local environments.
+- skills.sh repository grouping and public discovery/install entry points.
+
 ## 0.2.0 — 2026-11-15
 
 - Three reusable authoring skills for optional PhotoCraft/Photoshop preparation, Spine rigging/animation, and runtime slots/skins integration.
