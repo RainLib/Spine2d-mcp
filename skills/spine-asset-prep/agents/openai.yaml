@@ -1,4 +1,4 @@
 interface:
-  display_name: "Spine 素材与图层准备"
-  short_description: "可选探测 PhotoCraft 或 Photoshop MCP，管理分层素材并交接 Spine"
-  default_prompt: "使用 $spine-asset-prep 准备角色素材，优先使用可用的 PhotoCraft 或 Photoshop MCP 管理图层与导出。"
+  display_name: "Spine Asset and Layer Preparation"
+  short_description: "Prepare layered art and transparent exports for Spine"
+  default_prompt: "Use $spine-asset-prep to prepare character assets, preferring an available PhotoCraft or Photoshop MCP for layers and exports."

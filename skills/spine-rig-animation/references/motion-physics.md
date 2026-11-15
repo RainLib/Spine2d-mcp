@@ -1,33 +1,33 @@
-# 动作与物理次级运动
+# Animation and Secondary Motion
 
-## 用结果描述动作要求
+## Define motion through observable outcomes
 
-在制作前从任务提取需要的观察点，而非统一套用固定动画清单。例如：释放时嘴部和特效出口吻合；移动时承重脚不过度滑动；挥击不扯动无关衣料；恢复末帧能接回待机；循环速度及轮廓连续。已有攻击时序、状态和事件以消费方契约为准。
+Extract relevant checkpoints from the task instead of applying a fixed animation list. Examples include mouth/effect-origin alignment on release, limited sliding of the supporting foot, attacks that do not pull unrelated cloth, recovery that transitions into idle, and continuous loop velocity and silhouette. Existing attack timing, states, and events follow the consuming game's contract.
 
-区分角色全局位移、骨架内动作和镜头运动。检查动作在独立播放、混合衔接、受击／取消、死亡覆盖、换肤及倍速时的结果；避免两条轨道重复控制同一全局位移。循环不能只比对时间首尾，还应观察速度突变与累计漂移。
+Distinguish global character displacement, motion within the skeleton, and camera movement. Check isolated playback, blended transitions, hit reactions/cancellation, death overrides, skin changes, and playback speed changes. Avoid two tracks applying the same global displacement. Inspect velocity discontinuities and accumulated drift in addition to comparing loop endpoints.
 
-原生采样至少覆盖动作开头、接触／释放、动作极值、末尾及关键混合窗口；长动作和连续物理需顺序推进。采样密度按速度和变形风险选择，不固定把某个游戏的帧数当作通用验收标准。对照静态绑定姿态的三角面积／绕序，检查翻折和大幅退化；结合画面检查脸部比例、遮挡与脚点。
+Native sampling should cover the start, contact/release, motion extremes, end, and important blend windows. Advance long animations and continuous physics sequentially. Choose sampling density according to speed and deformation risk rather than treating one game's frame count as universal. Compare triangle areas/winding with the bind pose to detect inversion and severe degeneration, and visually inspect facial proportions, occlusion, and foot positions.
 
-## Physics 的选择
+## Choose the appropriate physics behavior
 
-先确认用户需要原生物理约束、普通动画表现，还是游戏物理行为。Spine Physics 处理骨骼的次级运动，不能由此推断已实现游戏碰撞、伤害或网络同步。确认当前 Spine 版本、许可功能及运行时接口真的支持目标约束。当前通用 MCP 没有专用 physics 创建／调参工具。
+Determine whether the user needs native physics constraints, authored animation, or game physics. Spine Physics supplies secondary bone motion; it does not establish game collision, damage, or network synchronization. Confirm that the actual Spine version, licensed features, and runtime API support the required constraints. The generic MCP currently has no dedicated physics-creation or tuning tool.
 
-需要物理时通过已验证编辑器接口或目标版本的本地生成器设置约束；检查作用骨、约束顺序、允许影响的变换、强度、阻尼、惯性、质量、重力／风、mix 与参考缩放。实际可用字段由该版本决定。规则与限制参见 [Spine Physics constraints](https://esotericsoftware.com/spine-physics-constraints)，约束求解顺序参见 [Spine Constraints](https://esotericsoftware.com/spine-constraints)。
+When physics is needed, configure constraints through a verified editor interface or a generator for the target version. Check affected bones, constraint order, permitted transforms, strength, damping, inertia, mass, gravity/wind, mix, and reference scale. Available fields depend on the version. See [Spine Physics constraints](https://esotericsoftware.com/spine-physics-constraints) and [constraint evaluation order](https://esotericsoftware.com/spine-constraints).
 
-不能把“导出存在 physics 字段”当作运动已正确，也不能把预设摆动曲线写成“物理验证通过”。若改用普通关键帧，应清楚标注为制作的次级运动；若用户明确要求原生物理，普通摆动不能静默替代完成标准。
+An exported `physics` field does not prove correct motion, and a preset oscillation curve is not a passed physics test. Label ordinary keyframes as authored secondary motion. When native physics is explicitly required, ordinary oscillation must not silently replace the acceptance criterion.
 
-不要假定编辑器提供“一键把 Physics 烘成关键帧”。需要可重现采样或自定义重建时，先验证实际工具能力与目标效果，记录采用的方式、时间步和误差；不得把自定义采样称为已经使用原生烘焙功能。
+Do not assume the editor offers a one-click command to bake Physics into keyframes. For reproducible sampling or custom reconstruction, first verify actual tool support and the required result. Record the method, time step, and error. Do not describe custom sampling as use of a native baking feature.
 
-## 按相同历史验证
+## Validate using the same simulation history
 
-物理结果与历史状态有关。逐帧从一致的初始化／重置状态推进，再比较预览和运行时；任意跳到时间点的单帧结果不能代替连续模拟。为目标项目明确以下行为：
+Physics depends on prior state. Advance frame by frame from consistent initialization/reset conditions before comparing preview and runtime. A single frame reached by an arbitrary seek is not a substitute for continuous simulation. Establish the behaviors relevant to the target project:
 
-- 出生／重用、瞬移、转向、缩放与阶段切换时如何重置或保留次级运动。
-- 暂停 delta=0、恢复、倍速和帧率变化是否造成跳变、爆振或累计漂移。
-- 受击／取消／死亡的混合和约束 mix 是否恢复，反复循环是否稳定。
-- 镜像或装备改变后，风向、重力、碰撞表现及骨链是否仍符合预期。
-- 若项目需要回放或确定性，是否提供了相同输入、时间步与重置历史，而非仅一次相似画面。
+- How spawning/reuse, teleporting, turning, scaling, and phase changes reset or preserve secondary motion.
+- Whether `delta=0`, resume, speed changes, and frame-rate changes cause jumps, unstable oscillation, or accumulated drift.
+- Whether hit/cancel/death blends and constraint mix recover, and repeated loops remain stable.
+- Whether wind, gravity, collision appearance, and bone chains behave as intended after mirroring or equipment changes.
+- Whether replay or determinism requirements use matching inputs, time steps, and reset history rather than one similar-looking frame.
 
-这些是待验证的行为，不是每个项目都必须启用的功能。不承诺跨机器、跨版本或不同时间步的物理结果天然逐像素相同。
+These are behaviors to verify when relevant, not features every project must enable. Do not promise inherently identical physics across machines, versions, or time steps.
 
-`godot_validate` 当前只加载并短采样动画，不覆盖上述 Physics、整段变形或视觉检查。需要完整效果时使用实际原生运行时的受控预览／采样器，并把报告绑定导出 JSON／atlas／图片哈希。截图、动态视频与数值检查分别陈述验证范围。
+`godot_validate` currently loads and briefly samples animation. It does not cover the Physics behaviors above, complete deformation, or visual review. Use a controlled preview/sampler in the actual native runtime when full validation is needed, and bind reports to exported JSON, atlas, and image hashes. State the separate coverage of screenshots, motion videos, and numerical checks.

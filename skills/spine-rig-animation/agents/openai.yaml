@@ -1,4 +1,4 @@
 interface:
-  display_name: "Spine 骨架与动画制作"
-  short_description: "制作与校验骨架、Mesh、权重、动作衔接及物理次级运动，复用通用管线"
-  default_prompt: "使用 $spine-rig-animation 制作或调整角色骨架、Mesh、权重和动画，并验证物理与变形效果。"
+  display_name: "Spine Rigging and Animation"
+  short_description: "Build and validate rigs, meshes, weights, and motion"
+  default_prompt: "Use $spine-rig-animation to create or adjust the character rig, mesh, weights, and animation, then validate deformation and secondary motion."

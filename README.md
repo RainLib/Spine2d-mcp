@@ -2,6 +2,8 @@
 
 # Spine2d-mcp
 
+[English](README.md) | [简体中文](README_CN.md) | [日本語](README_JA.md) | [한국어](README_KO.md)
+
 <img src="docs/assets/brand/icon.png" alt="Original Spine2d-mcp icon" width="80" align="right">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -10,13 +12,15 @@
 
 The repository/display name is **Spine2d-mcp**; the Python package and executable remain `spine-pipeline-mcp` for existing client compatibility. The project icon is unchanged. The banner uses the official, unmodified Spine mark only to identify compatibility; Codex and Claude Code are plain-text labels, not official logos or endorsements. See [third-party notices](THIRD_PARTY_NOTICES.md).
 
-[中文说明](docs/README.zh-CN.md) · [Install / marketplaces](docs/distribution.md) · [Connect Codex / Claude](docs/clients.md) · [Authoring skills](docs/skills.md) · [Architecture](docs/architecture.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
+[Install / marketplaces](docs/distribution.md) · [Connect Codex / Claude](docs/clients.md) · [Authoring skills](docs/skills.md) · [Architecture](docs/architecture.md) · [Security](SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
 > **Early prototype, project version 0.2.1.** This repository uses the official Python MCP SDK **2.3.0**. That SDK version is not a claim of “MCP protocol 2.0”, FastMCP 2.x, or project version 2.0. The fifteen tools below are implemented. Output remains staging-only; there is no publication tool.
 
 ## Install MCP + Skills
 
 The **MCP executes tools**; the **Skills guide the agent's workflow**. Use both for asset preparation → Spine rigging/animation → runtime integration. All paths and game-specific conventions come from the user.
+
+All three Skills use English for instructions, references, and interface metadata. The repository plugin is version **0.2.2**; the MCP server and published Registry bundle are version **0.2.1**.
 
 **Discovery and downloads:** [three Skills on skills.sh](https://skills.sh/rainlib/spine2d-mcp) · [official MCP Registry entry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.RainLib%2Fspine-pipeline-mcp/versions/latest) · [version 0.2.1 MCPB release](https://github.com/RainLib/Spine2d-mcp/releases/tag/v0.2.1). In the [Registry search](https://registry.modelcontextprotocol.io/), enter `io.github.RainLib/spine-pipeline-mcp`. The repository plugins below combine all fifteen MCP tools and the three skills.
 

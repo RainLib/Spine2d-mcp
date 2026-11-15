@@ -1,36 +1,36 @@
 ---
 name: spine-asset-prep
-description: "为 Spine 2D 准备 AI 或已有角色素材；可选探测 PhotoCraft／Photoshop MCP，优先在可用编辑器内管理图层、状态预览和透明 PNG 导出。适用于分层素材与 Spine 交接，不负责一般照片处理。"
+description: "Prepare AI-generated or existing character art for Spine 2D. Discover optional PhotoCraft or Photoshop MCP tools and prefer an available editor for layers, state previews, and transparent PNG exports. Use for layered asset preparation and Spine handoff, not general photo editing."
 ---
 
-# Spine 素材与图层准备
+# Spine Asset and Layer Preparation
 
-产出可继续编辑的图层工程、对齐的素材、状态预览和交接记录。此技能通用于不同游戏；角色拆分策略、目录和命名取自当前用户任务，不内置某个游戏的约定。
+Deliver an editable layered project, aligned assets, state previews, and a handoff record. Derive character decomposition, directories, and naming from the current task; this skill does not impose conventions from a particular game.
 
-## 选择可用路径
+## Choose an available workflow
 
-先发现当前会话的工具并作一次只读探测。PhotoCraft 与 Photoshop 都是**可选项**：应用已安装、配置里有服务器、当前 MCP 真正可调用，是三种不同状态。按 [MCP 探测与编辑器操作](references/photo-tools.md) 判断。
+Discover the current session's tools and perform a read-only probe. PhotoCraft and Photoshop are **optional**: an installed application, a configured server, and a working MCP connection are three different states. Follow [editor discovery and operations](references/photo-tools.md).
 
-- 若有可调用的 PhotoCraft／Photoshop MCP，优先在其中管理 AI 素材、图层、遮罩、状态和导出。两者都可用时优先使用用户指定应用，或现有可编辑源工程对应应用。
-- 若应用存在但 MCP 不可用，说明当前状态；有已验证的本地 CLI、脚本桥或用户指定 UI 路径时可使用。不要把 CLI 成功称为 MCP 连通，也不因缺少可选插件而暂停整个任务。
-- 若两者均不可用，保留原始图片和来源记录，准备相对路径的文件交接包。使用当前可用且符合任务授权的图像工具；不要声称已经创建或检查分层工程。
+- When a PhotoCraft or Photoshop MCP is callable, prefer it for AI assets, layers, masks, states, and exports. If both work, use the application the user specifies or the one associated with the existing editable project.
+- If the application exists but its MCP is unavailable, state that limitation. Use a verified local CLI, script bridge, or user-specified UI workflow when available. CLI success does not establish MCP connectivity, and an absent optional plugin does not block the entire task.
+- If neither editor is available, preserve the original images and provenance, and prepare a file handoff with relative paths. Use available image tools within the task's authorization. Do not claim to have created or inspected a layered project.
 
-需要新 AI 素材时使用当前可用的图像生成能力，保存原图及提示词来源；仅当后续实际需要生成或编辑图像时才读取相应图像技能。创建本技能不触发素材生成、应用安装或现有工程修改。
+When new AI art is needed, use an available image-generation capability and retain the original output and prompt provenance. Read an image skill only when the task actually requires generating or editing images. Creating this skill does not itself initiate asset generation, application installation, or changes to an existing project.
 
-## 在图层工程中组织
+## Organize the layered project
 
-读取用户指定源工程的图层树、尺寸、脏状态、当前可见组合和预览。保留已有手工调整；编辑副本或明确的版本，不用生成脚本重建覆盖当前工程。锁定／隐藏参考层是否可用以实际命令为准。
+Inspect the user-specified document's layer tree, dimensions, unsaved changes, visible state, and preview. Preserve manual adjustments. Edit a copy or an explicit version instead of regenerating and overwriting the current project. Use reference-layer locking or hiding only when the actual interface supports it.
 
-按动作需要组织图层：连续主体、确需独立运动的附属部位、互斥状态、装备和独立特效。连续身体可以有多层编辑源，也可以最终导出为一个主体纹理；图层数量不决定 Spine mesh 数量。不要默认逐关节拆件，或把所有角色一律强制为单 mesh。
+Organize layers around the required motion: a continuous body, parts that need independent movement, mutually exclusive states, equipment, and separate effects. A continuous body may have several editable source layers and still export as one texture. Layer count does not determine Spine mesh count. Do not automatically split every joint or force every character into a single mesh.
 
-原始 AI 图片保持可追溯；遮罩、选区、颜色修订和部件拆分写入派生图层。图像编辑器可用时，用其引擎完成这些栅格操作。像素读取、轮廓分析、哈希和几何计算可由本地代码完成，不冒充图层编辑。原画未绘制的背面或遮挡区域需要新内容时按用户授权补绘，不靠网格拉伸制造。
+Keep original AI images traceable. Put masks, selections, color revisions, and separated parts in derived layers. When an image editor is available, use its engine for these raster operations. Local code may read pixels, analyze contours, compute hashes, and calculate geometry; those operations do not constitute layer editing. If hidden or rear surfaces need new artwork, create it within the user's authorization instead of stretching a mesh to invent missing content.
 
-用 Layer Comps 或等效状态表达闭口／张口、装备／空手、姿态／阶段等**实际需要**的组合。互斥素材应有正确默认状态。原始参考、标注和调试层不进入运行纹理。
+Use Layer Comps or equivalent states for the combinations actually required, such as open/closed mouths, equipped/empty hands, poses, or phases. Set correct defaults for mutually exclusive assets. Exclude original references, annotations, and debugging layers from runtime textures.
 
-## 交给 Spine
+## Hand off to Spine
 
-导出前阅读 [交接与对齐约定](references/art-handoff.md)。保持透明度、画布坐标、裁切偏移、锚点、缩放及前后关系可追踪。图层分组导出可能合并组；逐一核对输出，不能把“导出成功”当作已得到所有叶子图层。
+Read [handoff and alignment conventions](references/art-handoff.md) before exporting. Track transparency, canvas coordinates, crop offsets, anchors, scale, and draw order. Group exports may merge their children: inspect each output instead of treating a successful export as proof that every leaf layer was exported.
 
-保存原生可编辑文件；需要互通时额外导出 PSD，并实际读回、比较图层与状态预览，记录有损特性警告。核对每个所需状态的合成图和独立透明 PNG，保留应用命令实际返回的文件路径。
+Save the native editable document. Export PSD as an additional interchange format when needed, then reopen it and compare layers and state previews. Record compatibility warnings for lossy features. Check the composite for every required state and each separate transparent PNG, and retain the actual file paths returned by the application.
 
-交付说明列出：原始素材、可编辑工程、实际导出的纹理、坐标记录及已验证的预览。开始骨架制作时，若已安装 `spine-rig-animation`，读取其技能；若不可用，直接沿本交接记录使用实际可用的 Spine 工具，不让可选技能成为阻碍。
+The delivery record should identify original assets, editable projects, exported textures, coordinate metadata, and verified previews. For rigging, use `spine-rig-animation` if installed. Otherwise continue from the handoff record with available Spine tools; an optional companion skill must not become a blocker.

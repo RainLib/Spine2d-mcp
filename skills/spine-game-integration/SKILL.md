@@ -1,34 +1,34 @@
 ---
 name: spine-game-integration
-description: "将 Spine 2D 角色接入用户指定的游戏运行时，处理 Slot、附件、骨骼挂点、换肤、装备组合、动画事件和资源验证。用于 Spine 与游戏接口的衔接，不预设游戏目录、角色命名或战斗规则。"
+description: "Integrate Spine 2D characters into a user-specified game runtime, including slots, attachments, bone sockets, skins, equipment combinations, animation events, and asset validation. Use for Spine-to-game integration without assuming game directories, character names, or combat rules."
 ---
 
-# Spine 游戏接入与换肤
+# Spine Game Integration and Skins
 
-按本次任务明确的游戏契约接入 Spine，交付可复现的资源及运行时行为。此技能只提供通用方法；创建或安装它不会连接、扫描或修改任何具体游戏。仅当用户后续指定接入目标时才读取该目标的实际代码和配置。
+Integrate Spine according to the current task's game contract, delivering reproducible assets and runtime behavior. This skill provides generic methods. Creating or installing it does not connect to, scan, or modify a particular game. Inspect a consuming project's code and configuration only when the user specifies that integration target.
 
-## 读取接入契约
+## Establish the integration contract
 
-确认目标引擎及 Spine runtime／包装层版本、资源入口、动画状态映射、更新时间来源、暂停行为、已有换肤／装备接口和游戏事件归属。不要从一个示例推断所有引擎的 API，也不要复制另一项目的绝对路径、bone／slot 名或数值预算。
+Confirm the target engine, Spine runtime/wrapper versions, resource entry points, animation-state mapping, time source, pause behavior, existing skin/equipment APIs, and ownership of game events. Do not generalize every engine's API from one example or copy another project's absolute paths, bone/slot names, or budgets.
 
-识别当前任务是资源交接、预览接入还是正式替换。按已授权范围完成工作；通用 MCP 只生成暂存 job，不包含自动发布到游戏的工具。若任务只是准备资源，交付包与契约即可，不擅自修改消费方。
+Determine whether the task is an asset handoff, preview integration, or production replacement. Work within the existing authorization. The generic MCP creates staging jobs and has no automatic game-publication tool. For an asset-preparation task, deliver the package and contract without modifying the consuming project.
 
-## Slot、挂点、换肤和装备
+## Slots, sockets, skins, and equipment
 
-读取 [Slot 与换肤契约](references/slots-skins.md)。区分绘制 slot、skin placeholder、实际 attachment、texture path 和用于位置追踪的骨骼／point。slot 本身没有变换，不能直接当世界坐标挂点。
+Read [slot and skin contracts](references/slots-skins.md). Distinguish drawing slots, skin placeholders, actual attachments, texture paths, and bones/points used for position tracking. A slot has no transform of its own and cannot directly serve as a world-space socket.
 
-从用户需要的效果定义稳定挂点，再绑定实际骨骼／point 与命名映射。验证缩放、翻转、动作混合、阶段／皮肤变化后出口仍在正确位置。道具握点、嘴部状态和其他互斥附件均检查默认、切换及恢复。
+Define stable sockets from the user's required effects, then map them to actual bones/points and names. Verify that origins remain aligned after scaling, mirroring, animation blending, phase changes, and skin changes. Check defaults, switching, and restoration for prop grips, mouth states, and other mutually exclusive attachments.
 
-换肤要覆盖皮肤选择、默认 slot 状态、当前动画重新应用及手动附件恢复的完整顺序，调用目标版本对应 API。组合装备时同时考虑依赖骨骼／约束和占位冲突，不只是拼纹理路径。对缺失资源的行为沿用游戏已有约定；发现包装层是空实现时应修正或走真正有效的入口，不能以调用无报错作为成功。
+Skin changes must cover selecting the skin, restoring default slot attachments, reapplying the current animation, and restoring manually selected attachments, using the target version's API. Equipment composition must preserve dependent bones/constraints and resolve placeholder conflicts, not merely combine texture paths. Follow the game's existing behavior for missing resources. If a wrapper is a no-op, fix it or use a working entry point; a call returning without an error does not prove success.
 
-## 动画与游戏效果
+## Animation and game effects
 
-从已有状态机映射待机、移动、技能阶段、受击、取消和退场，不重定义原有战斗时间。明确事件来源、触发时点及重复触发处理。表现事件与游戏权威判定分离：若消费方模型负责伤害，Spine 动画事件不能再扣一次；若明确设计为事件驱动，也要保持唯一结算来源。
+Map idle, movement, ability phases, hit reactions, cancellation, and exit behavior from the existing state machine instead of redefining combat timing. Identify event sources, trigger times, and duplicate handling. Keep presentation events separate from authoritative game resolution. If the game model applies damage, a Spine event must not apply it again; an explicitly event-driven design still needs one authoritative resolution source.
 
-角色动画、独立特效、碰撞／命中区域各有契约。读取 [运行时与验收](references/runtime-validation.md) 检查时间推进、事件、挂点和资源。需要调整骨架／动画时可使用已安装的 `spine-rig-animation`；没有该技能时以当前工具与运行时文档完成必要操作。
+Character animation, separate effects, and collision/hit regions have distinct contracts. Use [runtime validation](references/runtime-validation.md) to check time advancement, events, sockets, and resources. If rigging or animation changes are needed, use `spine-rig-animation` when installed; otherwise perform the necessary work using available tools and runtime documentation.
 
-## 完成交付
+## Complete the delivery
 
-打包实际导出 JSON／二进制、atlas 全部页和纹理；版本及相对路径自洽。需要编辑源时一并提供原生工程与素材交接，但按消费方打包规则隔离制作源和运行资产。
+Package the actual exported JSON/binary, atlas, and every texture page, with consistent versions and relative paths. Include the native project and art handoff when editable sources are required, keeping authoring sources separate from runtime assets according to the consuming project's packaging rules.
 
-验证从干净导入缓存或独立目录加载的真实资源。对目标任务检查首次加载、状态切换、换肤／装备、暂停恢复、对象复用及所需事件；保留源哈希和运行报告。交付清楚区分“静态通过”“原生加载通过”“完整行为／视觉通过”，不把预览截图当作战斗、设备性能或回放验证。
+Validate the actual resources from a clean import cache or an isolated directory. For the requested scope, check initial loading, state transitions, skins/equipment, pause/resume, object reuse, and required events. Retain source hashes and runtime reports. Distinguish static validation, native loading, and complete behavioral/visual acceptance. A preview screenshot does not establish combat correctness, device performance, or replay correctness.

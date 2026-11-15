@@ -1,39 +1,39 @@
-# MCP 能力与本地扩展
+# MCP Capabilities and Local Extensions
 
-以下是本通用包实现的能力分类，执行时仍以**当前连接实际发现的 schema**为准。连接未刷新时不可直接调用尚未列出的工具。
+These categories describe implemented capabilities. Always use the **schemas actually discovered on the current connection**. Do not call an unlisted tool merely because its source exists in an updated checkout.
 
-| 能力 | 工具／接口 | 边界 |
+| Capability | Tools or interface | Boundaries |
 | --- | --- | --- |
-| 源检查 | `skeleton_inspect`、`skeleton_validate`、`mesh_inspect` | 读取配置根下的相对 JSON；mesh 检查也可读取 job |
-| 暂存 | `stage_json_copy`、`stage_asset_bundle` | 前者仅 JSON，后者带引用图片；原生导出需要完整 bundle |
-| 权重 | `mesh_weights_get`、`mesh_weights_set` | 分页读取；修改已有绑定，保留局部坐标，不能凭骨骼名称自动重绑 |
-| 几何 | `mesh_replace` | 输入显式 UV、三角形、vertices、hull；不自动从图片生成网格 |
-| 规则 | `job_validate`、`mesh_policy_validate` | 静态结构及声明式规则，不是完整 Spine schema／物理或视觉验收 |
-| 动画 | `animation_copy`、`animation_retime`、`bone_keys_set` | 复制不覆盖目标；变速／设置 key 目前支持 linear／stepped，拒绝 Bezier |
-| 原生管线 | `spine_export`、`godot_validate` | 配置本机合法可用的 Spine 与原生 Spine-enabled Godot；输出始终暂存 |
+| Source inspection | `skeleton_inspect`, `skeleton_validate`, `mesh_inspect` | Relative JSON paths under the configured root; mesh inspection can also read a job |
+| Staging | `stage_json_copy`, `stage_asset_bundle` | JSON only versus JSON plus referenced images; native export requires a complete bundle |
+| Weights | `mesh_weights_get`, `mesh_weights_set` | Paged reads and edits of existing bindings; preserve local coordinates; bone names alone cannot define new bindings |
+| Geometry | `mesh_replace` | Explicit UVs, triangles, vertices, and hull; no automatic image-to-mesh generation |
+| Policies | `job_validate`, `mesh_policy_validate` | Static structure and declarative rules, not complete Spine schema, physics, or visual acceptance |
+| Animation | `animation_copy`, `animation_retime`, `bone_keys_set` | Copy does not overwrite a target; retiming/key edits currently support linear/stepped and reject Bezier |
+| Native pipeline | `spine_export`, `godot_validate` | Explicitly configured, licensed local Spine and native Spine-enabled Godot; all output remains in staging |
 
-骨骼创建、IK／Transform／Path／Physics 约束编排、skin／slot 构造、自动布网、权重平滑与完整动态验收并没有对应的内置创建工具。写了技能不代表这些 MCP API 已存在。
+There are no built-in creation tools for bones, IK/Transform/Path/Physics constraint orchestration, skins/slots, automatic meshing, weight smoothing, or complete dynamic validation. A skill description does not create these MCP APIs.
 
-当用户请求这些能力：先查是否有其他已验证的 Spine 编辑器桥接接口；否则读取已有本地生成器或使用通用包的 Python 扩展边界。核对目标版本的实际 schema／官方文档，生成副本，验证后再走原生导入。缺少运行时／编辑器时诚实说明未验证部分，不伪造工具调用或自动替换版本。
+For such requests, first look for a verified Spine editor bridge. Otherwise inspect an existing local generator or use the package's Python extension interface. Verify the target version's schema or official documentation, generate a copy, validate it, and then use native import. Without the required runtime/editor, report the unverified portions; do not fabricate tool calls or silently substitute versions.
 
-## 推荐链路
+## Suggested pipeline
 
 ```text
-inspect source → stage_asset_bundle → job A
-mesh／animation edit → new job B
+inspect source -> stage_asset_bundle -> job A
+mesh/animation edit -> new job B
 mesh_inspect + job_validate + project policy
-spine_export → new job C
-godot_validate → new check job D
+spine_export -> new job C
+godot_validate -> new check job D
 local full-motion sampling / rendered review when needed
 ```
 
-选择器为 `(skin, slot, attachment map key)`，不是贴图路径。编辑都返回新 job，下一步使用返回的 ID，不继续修改旧 job 或原图。导出的 atlas 全部纹理页需要一起交接。
+Selectors are `(skin, slot, attachment map key)`, not texture paths. Every edit returns a new job. Use the returned ID for subsequent steps instead of modifying the old job or source art. Hand off every texture page referenced by the exported atlas.
 
-编辑器版本必须与当前 `spine_export` 配置精确匹配。Spine 4.3 `bone_keys_set` 的 rotate 使用 `value`；不要把其他版本的 `angle` 示例直接套入。不同官方运行时、Godot 包装层和 4.2／4.3 的 API 名称可能不同，按安装版本和源码核实。
+The editor version must exactly match the current `spine_export` configuration and asset version. In Spine 4.3, `bone_keys_set` rotate keys use `value`; do not copy another version's `angle` examples. API names may differ across official runtimes, Godot wrappers, and Spine 4.2/4.3. Verify the installed version and source.
 
-## 普通 Python 扩展
+## Ordinary Python extensions
 
-在使用方维护角色策略／生成器，显式注册可信回调：
+Keep character policies and generators in the consuming project, and explicitly register trusted callbacks:
 
 ```python
 from pathlib import Path
@@ -46,6 +46,6 @@ adapter = ProjectAdapter(pipeline, validators=[local_validator])
 result = adapter.transform(parent_job_id, "custom_operation", local_transform, policy)
 ```
 
-这里的变量来自本次任务的真实配置；不是可直接复制执行的项目配置。`local_transform(doc)` 返回候选 JSON；validator 接收副本并返回含布尔 `valid` 的对象。通用结构与本地检查通过后才创建新 job。直接调用 `Pipeline.transform` 不自动执行项目规则，需要规则时使用 `ProjectAdapter`。
+These variables must come from the current task's actual configuration; the example is not a ready-to-run project setup. `local_transform(doc)` returns candidate JSON. A validator receives a copy and returns an object containing a boolean `valid`. A new job is created only after generic structural checks and local checks pass. Calling `Pipeline.transform` directly does not automatically apply project policies; use `ProjectAdapter` when those policies are required.
 
-回调是可信本地 Python，不是沙箱。先检查旧脚本的顶层副作用，避免为了复用一个函数触发全角色重建或源文件覆盖。MCP 工具参数不接受任意脚本路径。重复适用的能力可以后续纳入通用核心；本次技能创建本身不授权修改任何消费方游戏工程。
+Callbacks are trusted local Python, not a sandbox. Inspect old scripts for top-level side effects before importing functions, so reuse does not trigger a full character rebuild or overwrite sources. MCP tool arguments do not accept arbitrary script paths. Reusable capabilities may later move into the generic core. Creating this skill alone does not authorize changes to any consuming game project.

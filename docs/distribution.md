@@ -12,7 +12,7 @@
 | [官方 MCP Registry](https://registry.modelcontextprotocol.io/) | MCP 元数据、版本和 MCPB 下载地址 | 搜索 `io.github.RainLib/spine-pipeline-mcp`；导入包需要客户端支持 MCPB 0.4 UV |
 | Codex / Claude 公共插件目录 | 客户端公共插件发现入口 | 与本仓库市场独立的提交／审核流程 |
 
-**当前版本：0.2.1。** MCP 包通过 GitHub Releases 分发，Registry 名称为 `io.github.RainLib/spine-pipeline-mcp`，三项技能在 [skills.sh](https://skills.sh/rainlib/spine2d-mcp) 提供详情与安装入口。另有可直接添加的 Codex／Claude 仓库市场。本项目没有发布 PyPI 包，也不声称通过 Codex／Claude 公共插件目录审核。实测范围见文末验证记录。
+**当前版本：MCP 服务与 Registry 包 0.2.1，仓库插件 0.2.2。** MCP 包通过 GitHub Releases 分发，Registry 名称为 `io.github.RainLib/spine-pipeline-mcp`，三项英文技能在 [skills.sh](https://skills.sh/rainlib/spine2d-mcp) 提供详情与安装入口。另有可直接添加的 Codex／Claude 仓库市场。本项目没有发布 PyPI 包，也不声称通过 Codex／Claude 公共插件目录审核。实测范围见文末验证记录。
 
 ## Install the combined plugin
 
@@ -241,7 +241,7 @@ Codex 的列表检查应从这个本地仓库运行；若客户端尚未发现�
 
 ### MCPB / Registry release maintenance
 
-同步 `pyproject.toml`、`manifest.json`、两个插件清单的版本，执行 `uv lock`，然后从仓库根目录构建和验证：
+发布新的 MCP 服务版本时，同步 `pyproject.toml`、`manifest.json` 与 `server.json` 的版本，更新携带该服务的插件版本，并执行 `uv lock`。只更新 Skills 或用户文档时，可以单独递增两个插件清单的版本；不要覆盖已经发布的 Registry 版本或 MCPB 文件。构建新的 MCPB 时从仓库根目录执行以下命令，并将示例版本号换成实际新版本：
 
 ```sh
 npx --yes @anthropic-ai/mcpb@2.1.2 validate manifest.json

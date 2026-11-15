@@ -1,34 +1,34 @@
-# Slot、Skin 与游戏接口
+# Slots, Skins, and Game Interfaces
 
-## 明确名称与职责
+## Distinguish names and responsibilities
 
-| 概念 | 作用与需要记录的契约 |
+| Concept | Role and contract to record |
 | --- | --- |
-| bone | 变换与层级；挂点追踪读取对应变换 |
-| slot | 绑定在骨骼上的绘制容器；同一时刻显示一个 attachment 或不显示 |
-| attachment key／skin placeholder | 通过 skin 查找附件的稳定键；不一定等于实际附件名 |
-| 实际 attachment | region／mesh／point／boundingbox 等具体资源及数据 |
-| texture path | 纹理查找路径，不能代替 slot 或 attachment 选择器 |
-| 游戏 socket | 游戏定义的接口，映射到 bone、point 或包装层实际支持的位置来源 |
+| bone | Transform and hierarchy; socket tracking reads the relevant transform |
+| slot | Drawing container attached to a bone; displays one attachment or none at a time |
+| attachment key / skin placeholder | Stable key for skin lookup; may differ from the actual attachment name |
+| actual attachment | A concrete region, mesh, point, bounding box, or other resource and its data |
+| texture path | Texture lookup path; not a substitute for a slot or attachment selector |
+| game socket | A game-defined interface mapped to a bone, point, or position source supported by the wrapper |
 
-slot 是绘制与附件管理概念，自身没有位置；绘制顺序不等同于骨骼层级。依据 [Spine Slots](https://esotericsoftware.com/spine-slots)。空 slot 可以作为约定保留，但挂点世界坐标仍需由真实骨骼／point 计算。
+A slot manages drawing and attachments; it has no position of its own. Draw order is separate from bone hierarchy. See [Spine Slots](https://esotericsoftware.com/spine-slots). An empty slot may reserve a convention, but a socket's world position still needs a real bone/point transform.
 
-用小型映射表记录消费方需要的名字，例如“施法出口 → 某骨骼”“主手 → 某 slot／placeholder”；名称来自任务，不预设 `fx_cast` 或 `weapon` 必须存在。每个需要的 skin 都检查映射，骨骼前缀变化不能让游戏继续绑定旧骨。
+Record consuming names in a small mapping, such as "cast origin -> selected bone" or "main hand -> selected slot/placeholder." Names come from the task; do not assume `fx_cast` or `weapon` must exist. Check mappings for every required skin. A changed bone prefix must not leave the game bound to an old bone.
 
-## 换肤
+## Change skins
 
-读取实际 skin 清单与默认 skin 回退；不要把未找到新附件后显示旧附件误判为换肤成功。Spine skin 可以关联附件、专用骨骼及约束；已有或新组合的皮肤要保留这些依赖。参考 [Spine Skins](https://esotericsoftware.com/spine-skins)。
+Inspect the actual skin inventory and default-skin fallback. An old attachment remaining visible after a failed lookup is not a successful skin change. Spine skins can include attachments, dedicated bones, and constraints; preserve those dependencies in existing or newly composed skins. See [Spine Skins](https://esotericsoftware.com/spine-skins).
 
-通常需要按这个语义顺序更新：选择目标／组合 skin → 恢复 slot 默认附件 → 重新应用当前动画 → 恢复游戏手动指定的附件。方法名因运行时及包装层版本变化而异；先查当前源码／官方接口，不将示例方法名作为跨版本保证。来源：[Runtime Skins](https://esotericsoftware.com/spine-runtime-skins)。
+The usual semantic sequence is: select the target/composed skin, restore default slot attachments, reapply the current animation, then restore attachments manually selected by the game. Method names vary across runtime and wrapper versions. Inspect the current source or official API rather than treating example names as a compatibility guarantee. See [Runtime Skins](https://esotericsoftware.com/spine-runtime-skins).
 
-检查切换时机：动画时间是否应延续、过渡是否需要遮挡、切换当帧是否闪出默认姿态、物理是否重置、挂点是否重绑。只在切换需要时更新，避免每帧恢复 setup pose 抹掉动画或装备状态。
+Check switching behavior: whether animation time continues, transitions need occlusion, the setup pose flashes on the switching frame, physics resets, or sockets need rebinding. Update when a change requires it; restoring the setup pose every frame can erase animation or equipment state.
 
-## 装备与互斥状态
+## Equipment and mutually exclusive states
 
-先确认消费方表示装备的方式：单 slot 换附件、组合 skin、独立骨架或额外游戏节点。双持、双手、主副手、施法和空手等只在用户任务需要时实现，沿用已有冲突和隐藏规则。
+Identify the consuming project's equipment representation: attachment changes in one slot, composed skins, separate skeletons, or additional game nodes. Implement dual wielding, two-handed use, main/off-hand, casting, or empty-hand states only when requested, following existing conflict and visibility rules.
 
-同一个 slot 的嘴部／道具状态应互斥并可恢复默认。若动画关键帧会覆盖游戏设置的附件，明确由哪层最终决定，测试混合窗口与取消恢复。避免用另加一个同时可见 slot 掩盖错误的切换逻辑。
+Mouth/prop states within a slot should be mutually exclusive and restore the default correctly. If animation keys override game-selected attachments, establish which layer has final authority and test blend windows and cancellation recovery. Do not hide incorrect switching logic by adding another simultaneously visible slot.
 
-linked mesh 可共享几何和 Deform 依赖；不能为不同外形的装备随意复用。当前通用 mesh 编辑工具拒绝 linked mesh 文档，不可删除 parent／deform 字段绕过它。使用真正支持该依赖的工具或显式本地实现，并重新验证动画。
+Linked meshes may share geometry and Deform dependencies; they cannot be arbitrarily reused for equipment with different shapes. The generic mesh tools currently reject linked-mesh documents. Do not remove `parent` or deform fields to bypass this restriction. Use a tool or explicit local implementation that supports those dependencies, then revalidate the animation.
 
-目前通用 MCP 没有 skin、slot 或 constraint 创建工具。已存在的数据可检查和交接；需要新增时发现可用编辑器桥接，或通过目标版本的本地 Python 生成器与 `ProjectAdapter` 完成，不能编造 `skin_create` 等已实现 API。
+The generic MCP currently has no skin, slot, or constraint creation tools. Existing data can be inspected and handed off. For additions, discover a working editor bridge or use a local generator for the target version with `ProjectAdapter`. Do not invent implemented APIs such as `skin_create`.

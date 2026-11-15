@@ -1,32 +1,32 @@
-# 运行资源与行为验证
+# Runtime Assets and Behavior Validation
 
-## 资源闭环
+## Complete the resource pipeline
 
-确定导出 JSON／二进制版本与实际 runtime 兼容关系；当前 `spine_export` 要求精确匹配配置的 Spine editor 版本。Godot 场景需要实际含原生 Spine 类的构建；普通 Godot 安装不证明具备该能力。
+Confirm compatibility between the exported JSON/binary version and the actual runtime. The current `spine_export` requires an exact match with the configured Spine editor version. Godot scenes require a build that actually includes native Spine classes; a stock Godot installation does not establish that capability.
 
-从导出结果列举 atlas 与**所有**纹理页，不假定单页或固定文件名。核对相对路径、大小写、skin／slot／动画名称和资源引用。按引擎实际导入规则刷新缓存，验证导入内容的摘要对应当前源，而非文件名一样就认为更新成功。
+Inventory the atlas and **every** texture page from the export results. Do not assume a single page or fixed filenames. Check relative paths, case sensitivity, skin/slot/animation names, and resource references. Refresh caches according to the engine's actual import rules, and verify that imported content hashes correspond to the current sources. Matching filenames alone do not prove an update.
 
-`godot_validate` 在无消费方 autoload 的独立项目中加载并短采样，是通用加载检查。它不会验证游戏状态、完整物理、像素覆盖、手机性能、命中判定或网络回放。要验证这些，使用目标项目已有测试或本次实现的隔离场景。
+`godot_validate` loads and briefly samples an isolated project without the consuming game's autoloads. It is a generic loading check, not validation of game states, complete physics, pixel coverage, mobile performance, hit detection, or network replay. Use the target project's existing tests or an isolated scene created for the task to verify those behaviors.
 
-## 时间、事件与挂点
+## Time, events, and sockets
 
-确定谁推进骨架时间：引擎自动更新、游戏统一时钟或回放时钟。避免自动更新与手动更新同时生效。验证 delta=0、倍速、暂停恢复和对象重新启用；Physics 必须使用一致的历史状态与重置方式。
+Identify what advances skeleton time: automatic engine updates, a shared game clock, or a replay clock. Avoid enabling automatic and manual updates simultaneously. Check `delta=0`, playback speed, pause/resume, and object reactivation. Physics needs consistent state history and reset behavior.
 
-根据任务核对：
+Check the items relevant to the task:
 
-- 默认皮肤及默认附件、初始状态是否正确。
-- 状态改变、混合、取消与死亡是否遗留旧轨道、附件或粒子。
-- 攻击准备、释放／接触、恢复时刻是否与现有权威来源一致；重复播放／回调不重复结算。
-- 特效出口、手持道具和接触点经过角色变换、镜像和换肤后是否仍对齐。
-- 互斥附件是否只显示一个；组合装备缺项时按约定隐藏、回退或显式报错。
-- 角色复用、场景退出和资源释放是否清理临时状态和订阅。
+- Correct default skins, attachments, and initial state.
+- No stale tracks, attachments, or particles after state changes, blends, cancellation, or death.
+- Anticipation, release/contact, and recovery timing agree with the existing authority; repeated playback/callbacks do not resolve the same action twice.
+- Effect origins, handheld props, and contact points stay aligned through character transforms, mirroring, and skin changes.
+- Mutually exclusive attachments show only the intended state; missing equipment follows the specified hide, fallback, or error behavior.
+- Character reuse, scene exit, and resource disposal clear temporary state and subscriptions.
 
-如果任务涉及碰撞，可用 Spine boundingbox 等数据作为输入，但实际判定与事件消费仍按游戏契约实现。不要把可见 mesh 三角形自动变成新的伤害权威。
+If collision is in scope, Spine bounding-box data can be an input, but actual detection and event consumption still follow the game contract. Do not automatically turn visible mesh triangles into a new damage authority.
 
-## 输出证据
+## Evidence and delivery
 
-报告至少指向本次使用的版本和资源哈希，以及实际执行的检查。动态预览来自真实 Spine runtime；对于物理和接触问题，使用连续采样而非静态摆拍。报告中的“通过”应对应已执行范围，不从一次资源加载推导整段动作或所有 skin 都正确。
+Reports should identify the versions and resource hashes used, together with checks actually performed. Dynamic previews must come from the real Spine runtime. Use continuous sampling for physics and contact issues, not staged still images. A passing result covers the executed checks; one successful load does not establish correctness of every animation or skin.
 
-性能检查按目标设备与任务预算选择可见顶点、影响数、纹理显存、draw calls、加载耗时等指标；桌面预览不能替代手机测试。未在本次任务要求的项目／设备上执行时明确标记未测，不扩大本次交付的承诺。
+Choose performance metrics according to the target device and task budget: visible vertices, influence counts, texture memory, draw calls, load time, or other relevant measures. Desktop previews do not replace mobile testing. Clearly mark required project/device checks that were not executed.
 
-源工程、运行包、预览与报告保留清晰对应关系。消费方正式替换按用户已有授权和本次范围执行；没有替换任务时停留在可检查的交接包，不擅自发布或修改运行资源。
+Keep source projects, runtime packages, previews, and reports traceably related. Perform production replacement only within the user's existing authorization and task scope. If replacement is not requested, deliver an inspectable handoff package without publishing or modifying runtime resources.

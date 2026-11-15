@@ -1,5 +1,11 @@
 # Changelog
 
+## Plugin 0.2.2 — 2026-11-15
+
+- All three Skills now use English throughout their instructions, reference documents, and interface metadata.
+- English, Simplified Chinese, Japanese, and Korean README entry points link to each other from the repository root; the former Chinese documentation path links to `README_CN.md`.
+- Repository plugin version 0.2.2 carries the updated Skills. The MCP server and published Registry bundle are version 0.2.1.
+
 ## 0.2.1 — 2026-11-15
 
 - MCPB 0.4 UV bundle for public Registry distribution, with required source/staging configuration and optional native executable settings.
